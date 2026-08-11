@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>closed:in, the numbers, for FM Logistic</title>
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700,800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#15151c; --ink-dim:#6c6c79; --ink-faint:#9a9aa6;
+    --line:#e8e8ef; --line-2:#dcdce6;
+    --orange:#ff7a2a; --orange-soft:#ffb27e; --purple:#7877c6;
+    --green:#1f9d63; --green-soft:#d6f0e2;
+    --node:#ffffff;
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0; height:100%; overflow:hidden; background:#fbfbfd; color:var(--ink);
+    font-family:'Satoshi',system-ui,-apple-system,sans-serif; -webkit-font-smoothing:antialiased}
+  body{background-color:#fbfbfd;
+    background-image:radial-gradient(#d9d9e3 1.1px, transparent 1.1px);
+    background-size:24px 24px}
+  .canvas{position:fixed; inset:0; overflow:hidden}
+  .stage{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    transform-origin:center center; width:1340px; height:760px}
+
+  .hdr{position:absolute; top:22px; left:44px; right:44px; display:flex; align-items:center; justify-content:space-between}
+  .hdr .ci img{height:28px; display:block}
+  .hdr .client{display:flex; align-items:center; gap:11px; font-size:17px; font-weight:700; letter-spacing:-.02em}
+  .hdr .client .x{color:var(--ink-faint); font-weight:500}
+  .hdr .client img{height:34px; display:block}
+
+  .title{position:absolute; top:48px; left:0; right:0; text-align:center}
+  .title .eye{font-family:ui-monospace,"SF Mono",monospace; font-size:11.5px; letter-spacing:.22em;
+    text-transform:uppercase; color:var(--orange); font-weight:600}
+  .title h1{margin:7px 0 0; font-size:26px; letter-spacing:-.03em; font-weight:700}
+  .title h1 b{color:var(--orange); font-weight:700}
+
+  .wires{position:absolute; inset:0; z-index:1; pointer-events:none; overflow:visible}
+  .wires .base{fill:none; stroke:var(--line-2); stroke-width:2.5}
+  .wires .flow{fill:none; stroke:var(--orange); stroke-width:2.5; stroke-dasharray:2 9; stroke-linecap:round;
+    animation:flow 1.1s linear infinite}
+  .wires .flow.li{stroke:#0a66c2}
+  .wires .arrow{fill:var(--orange)}
+  .wires .arrow.li{fill:#0a66c2}
+  @keyframes flow{to{stroke-dashoffset:-22}}
+
+  /* generic card */
+  .card{position:absolute; z-index:2; background:var(--node); border:1px solid var(--line);
+    border-radius:16px; padding:13px 15px;
+    box-shadow:0 14px 34px -20px rgba(20,20,50,.30), 0 1px 2px rgba(20,20,50,.05);
+    transition:transform .4s var(--ease), box-shadow .4s var(--ease), border-color .4s var(--ease)}
+  .card:hover{transform:translateY(-4px); border-color:#ffd6b8;
+    box-shadow:0 24px 44px -22px rgba(255,122,42,.55); z-index:30}
+  .card .lab{font-family:ui-monospace,monospace; font-size:9px; letter-spacing:.13em; text-transform:uppercase;
+    color:var(--ink-faint); margin-bottom:5px}
+  .card .big{font-size:27px; font-weight:750; letter-spacing:-.035em; line-height:1}
+  .card .big small{font-size:12.5px; font-weight:600; color:var(--ink-dim); letter-spacing:-.01em}
+  .card .sub{margin-top:5px; font-size:11.5px; color:var(--ink-dim); line-height:1.32}
+  .card .rate{position:absolute; top:12px; right:14px; font-family:ui-monospace,monospace; font-size:10px;
+    font-weight:600; color:var(--orange)}
+  .card .rate.li{color:#0a66c2}
+
+  /* channel band */
+  .band{position:absolute; z-index:0; border-radius:20px; border:1px dashed var(--line-2)}
+  .band .btag{position:absolute; top:-11px; left:18px; background:#fbfbfd; padding:0 9px;
+    font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-faint); display:flex; align-items:center; gap:6px}
+  .band .btag img{height:13px; display:block}
+
+  /* commit vs target pill */
+  .pill{position:absolute; z-index:3; font-family:ui-monospace,monospace; font-size:9px; letter-spacing:.1em;
+    text-transform:uppercase; padding:3px 8px; border-radius:999px; font-weight:700}
+  .pill.commit{background:var(--green-soft); color:var(--green)}
+  .pill.target{background:#fff1e6; color:var(--orange)}
+  .pill.report{background:#eeeef7; color:var(--purple)}
+
+  .card.hero{border-color:#bde8d1; background:#f6fdf9}
+  .card.hero:hover{border-color:#8ed8b0; box-shadow:0 24px 44px -22px rgba(31,157,99,.45)}
+  .card.hero .big{color:var(--green)}
+  .card.hero .rate{color:var(--green)}
+
+  .pop{position:absolute; left:50%; top:calc(100% + 10px); transform:translateX(-50%) translateY(5px);
+    width:250px; background:#fff; border:1px solid var(--line-2); border-radius:12px; padding:11px 13px;
+    font-size:11px; line-height:1.5; color:var(--ink-dim); text-align:left;
+    box-shadow:0 20px 44px -18px rgba(20,20,50,.5); opacity:0; pointer-events:none;
+    transition:opacity .22s var(--ease), transform .22s var(--ease); z-index:40}
+  .pop::before{content:""; position:absolute; top:-6px; left:50%; transform:translateX(-50%) rotate(45deg);
+    width:11px; height:11px; background:#fff; border-left:1px solid var(--line-2); border-top:1px solid var(--line-2)}
+  .pop.up{top:auto; bottom:calc(100% + 10px)}
+  .pop.up::before{top:auto; bottom:-6px; border-left:none; border-top:none;
+    border-right:1px solid var(--line-2); border-bottom:1px solid var(--line-2)}
+  .card:hover .pop{opacity:1; transform:translateX(-50%) translateY(0)}
+
+  .legend{position:absolute; z-index:3; left:44px; bottom:52px; display:flex; flex-direction:column; gap:7px}
+  .legend .row{display:flex; align-items:center; gap:8px; font-size:11px; color:var(--ink-dim)}
+  .legend .row .k{font-family:ui-monospace,monospace; font-size:8.5px; letter-spacing:.1em; text-transform:uppercase;
+    padding:3px 8px; border-radius:999px; font-weight:700; min-width:74px; text-align:center}
+  .legend .row .k.commit{background:var(--green-soft); color:var(--green)}
+  .legend .row .k.target{background:#fff1e6; color:var(--orange)}
+  .legend .row .k.report{background:#eeeef7; color:var(--purple)}
+
+  .cap{position:absolute; bottom:18px; left:0; right:0; text-align:center; font-size:11.5px; color:var(--ink-faint)}
+  @media (prefers-reduced-motion:reduce){ .wires .flow{animation:none} }
+</style>
+</head>
+<body>
+<!-- =======================================================================
+     FM Logistic Romania, the numbers behind the KPI commitment.
+     Every rate on this page comes from closed:in's own measured data:
+       LinkedIn  : HeyReach, trailing 12 months, all workspaces
+                   2,317 requests -> 728 accepted (31.4%)
+                   478 messages -> 169 replies, 98 tagged interested (58% of replies)
+       Email     : 15 weekly client reports, 63,025 emails -> 1,169 replies (1.86%),
+                   3.2 emails per prospect, 17% of replies positive
+       Meetings  : Close CRM, interested reply -> held first meeting = 16.4%
+     The rates written on the page are deliberately set BELOW the measured ones,
+     so the commitment has headroom rather than needing a best case.
+======================================================================== -->
+<div class="canvas"><div class="stage" id="stage">
+  <div class="hdr">
+    <div class="ci"><img src="assets/closedin-logo-dark.png" alt="closed:in"></div>
+    <div class="client"><span class="x">for</span><img src="assets/fmlogistic-logo.svg" alt="FM Logistic"></div>
+  </div>
+  <div class="title">
+    <div class="eye">what you get per month</div>
+    <h1>From 3,362 companies to <b>3 to 4 qualified leads a week</b></h1>
+  </div>
+  <svg class="wires" id="wires" aria-hidden="true"></svg>
+  <div id="nodes"></div>
+  <div class="legend">
+    <div class="row"><span class="k commit">committed</span> we control this, it is in the SLA</div>
+    <div class="row"><span class="k target">target</span> we steer on it and report it weekly</div>
+    <div class="row"><span class="k report">reported</span> depends on your follow-up speed, tracked not promised</div>
+  </div>
+  <div class="cap">Hover any number to see where it comes from. Every rate is below what closed:in has actually measured.</div>
+</div></div>
+
+<script>
+  /* ============================ DATA ============================ */
+  const LI = { req:650, acc:180, rep:40, pos:17 };
+  const EM = { pros:1900, mails:6080, rep:113, pos:14 };
+  const OUT = { pos:28, sql:19 };
+
+  const CARDS = [
+    /* ---- source ---- */
+    {id:'list', x:44, y:190, w:196, h:120, lab:'your market', big:'3,362', unit:'companies',
+     sub:'above EUR 1M turnover, from official Romanian filed accounts',
+     pill:{t:'committed',c:'commit'},
+     pop:'Every Romanian company files annual accounts and the Ministry of Finance publishes the key figures as open data. 918,232 companies in the FY2025 set. Filtered to your sectors and above EUR 1M net turnover: 3,362, each with turnover, result, headcount, activity code and county attached.'},
+
+    /* ---- LinkedIn leg ---- */
+    {id:'lireq', x:300, y:150, w:172, h:104, lab:'connection requests', big:LI.req, unit:'/ month', li:true,
+     sub:'2 accounts, 80 per week each', pill:{t:'committed',c:'commit'},
+     pop:'HeyReach caps each LinkedIn account at roughly 100 connection requests per week and freezes any account that gets close, and that cannot be overridden. We commit to 80 per week per account, which leaves room for the invites your team sends by hand. Two accounts, your sales director and one BDM.'},
+    {id:'liacc', x:496, y:150, w:150, h:104, lab:'accepted', big:LI.acc, unit:'', rate:'28%', li:true,
+     sub:'connection accepted', pill:null,
+     pop:'Measured on closed:in\'s own HeyReach account over the last 12 months: 728 accepted out of 2,317 sent, so 31.4 percent. We plan on 28 percent. Published platform data sits between 19 and 29 percent, so 28 is at the top of that band but below our own result.'},
+    {id:'lirep', x:670, y:150, w:150, h:104, lab:'replies', big:LI.rep, unit:'', rate:'23%', li:true,
+     sub:'replied to the message', pill:null,
+     pop:'Measured: 169 replies. Careful reading of our own data, we messaged 478 of the 728 accepted connections, so 35 percent replied per message sent but 23 percent replied per accepted connection. We use the lower one, because here we message everyone who accepts.'},
+    {id:'lipos', x:844, y:150, w:150, h:104, lab:'interested', big:LI.pos, unit:'', rate:'40%', li:true,
+     sub:'of replies are positive', pill:null,
+     pop:'Measured: 98 of 169 replies were tagged interested, so 58 percent. We plan on 40 percent. LinkedIn replies skew more positive than email replies because someone accepted your connection first.'},
+
+    /* ---- Email leg ---- */
+    {id:'empros', x:300, y:352, w:172, h:104, lab:'email prospects', big:EM.pros, unit:'/ month',
+     sub:'650 of them also get LinkedIn', pill:{t:'committed',c:'commit'},
+     pop:'The email audience is wider than the LinkedIn audience, because LinkedIn is hard-capped by the tool. The best 650 companies get both channels, which is where the reply rate lifts. The other 1,250 get email only.'},
+    {id:'emmail', x:496, y:352, w:150, h:104, lab:'emails', big:EM.mails, unit:'',
+     rate:'3.2 each', sub:'276 per working day', pill:{t:'committed',c:'commit'},
+     pop:'Measured across 15 weekly client reports: 3.2 emails per prospect on a 3-step sequence. 1,900 prospects is 6,080 emails a month, which is 276 per working day. That needs 6 domains and 12 inboxes at 25 sends per inbox per day, giving 300 a day of capacity so there is headroom.'},
+    {id:'emrep', x:670, y:352, w:150, h:104, lab:'replies', big:EM.rep, unit:'', rate:'1.9%',
+     sub:'per email sent', pill:null,
+     pop:'Measured, and this is the number most agencies quote wrongly. Across 63,025 emails we sent for clients we got 1,169 replies, so 1.86 percent per email sent. Not per prospect. Range across clients was 0.24 percent at worst to 2.84 percent at best.'},
+    {id:'empos', x:844, y:352, w:150, h:104, lab:'interested', big:EM.pos, unit:'', rate:'12%',
+     sub:'of replies are positive', pill:null,
+     pop:'Measured across 1,169 replies: 17 percent blended, but the median client sits at about 10 percent and one outlier client pulls the blend up. We plan on 12 percent, inside the honest 7 to 17 percent band. The rest of the replies are referrals, not now, or no.'},
+
+    /* ---- converge ---- */
+    {id:'pos', x:1030, y:238, w:180, h:130, hero:true, lab:'interested replies', big:OUT.pos, unit:'/ month',
+     sub:'about 6 to 7 per week, both channels', pill:{t:'target',c:'target'},
+     pop:'The two channels overlap on the 650 companies that get both, so this is not simply 17 plus 14. After correcting for that overlap the combined figure is about 28 a month. This is the number we steer on and report every Monday.'},
+    {id:'sql', x:1030, y:392, w:180, h:130, hero:true, lab:'qualified leads', big:OUT.sql, unit:'/ month',
+     sub:'3 to 4 per week, the SLA number', pill:{t:'committed',c:'commit'},
+     pop:'A qualified lead is an interested reply from a company inside the agreed target profile, where the person is open to discussing co-packing. Roughly two thirds of interested replies qualify. 19 a month is 4.3 a week, so committing to 3 to 4 leaves headroom rather than needing everything to go right.'},
+
+    /* ---- what we do NOT commit to ---- */
+    {id:'mtg', x:1030, y:546, w:180, h:104, lab:'first meetings held', big:'3 to 5', unit:'/ month',
+     sub:'reported, not committed', pill:{t:'reported',c:'report'},
+     pop:'This one depends on your team, not ours. Our measured conversion from an interested reply to a held first meeting is 16.4 percent, and the main reason it is not higher is follow-up speed. If your team replies within one working day this number goes up. That is why it sits in the SLA as your commitment, not ours.'},
+
+    /* ---- infra ---- */
+    {id:'infra', x:44, y:352, w:196, h:122, lab:'sending infrastructure', big:'6 + 12', unit:'domains<br>+ inboxes',
+     sub:'warmed 2 to 3 weeks first', pill:{t:'committed',c:'commit'},
+     pop:'Separate sending domains, kept away from fmlogistic.com so your main domain is never at risk. SPF, DKIM and DMARC set per domain. 12 inboxes at 25 sends a day is 300 a day of capacity against 276 needed. Bounce rate kept under 2 percent, and if a domain degrades we replace it at our cost.'},
+  ];
+
+  const EDGES = [
+    ['list','lireq','li'], ['lireq','liacc','li'], ['liacc','lirep','li'], ['lirep','lipos','li'],
+    ['list','empros',''], ['empros','emmail',''], ['emmail','emrep',''], ['emrep','empos',''],
+    ['lipos','pos','li'], ['empos','pos',''],
+    ['pos','sql',''], ['sql','mtg',''],
+  ];
+
+  const BANDS = [
+    {x:286, y:120, w:722, h:150, tag:'LinkedIn, HeyReach', logo:'assets/heyreach.png'},
+    {x:286, y:322, w:722, h:150, tag:'Email, Instantly', logo:'assets/instantly.png'},
+  ];
+  /* ============================================================== */
+
+  const STAGE_W=1340, STAGE_H=760;
+  const stage=document.getElementById('stage');
+  const nodesEl=document.getElementById('nodes');
+  const wires=document.getElementById('wires');
+  const pos={};
+
+  BANDS.forEach(b=>{
+    const el=document.createElement('div');
+    el.className='band';
+    el.style.cssText=`left:${b.x}px; top:${b.y}px; width:${b.w}px; height:${b.h}px`;
+    el.innerHTML=`<span class="btag"><img src="${b.logo}" alt="">${b.tag}</span>`;
+    stage.appendChild(el);
+  });
+
+  CARDS.forEach(c=>{
+    pos[c.id]={x:c.x, y:c.y, w:c.w, h:c.h};
+    const el=document.createElement('div');
+    el.className='card'+(c.hero?' hero':'');
+    el.style.cssText=`left:${c.x}px; top:${c.y}px; width:${c.w}px; height:${c.h}px`;
+    const unit=c.unit?` <small>${c.unit}</small>`:'';
+    const bigTxt = (typeof c.big==='number') ? c.big.toLocaleString('en-US') : c.big;
+    const rate=c.rate?`<span class="rate${c.li?' li':''}">${c.rate}</span>`:'';
+    const popCls = (c.y > 420) ? 'pop up' : 'pop';
+    el.innerHTML=`${rate}<div class="lab">${c.lab}</div>`+
+      `<div class="big">${bigTxt}${unit}</div>`+
+      `<div class="sub">${c.sub}</div>`+
+      `<div class="${popCls}">${c.pop}</div>`;
+    nodesEl.appendChild(el);
+    if(c.pill){
+      const p=document.createElement('div');
+      p.className='pill '+c.pill.c;
+      p.textContent=c.pill.t;
+      p.style.cssText=`left:${c.x+c.w-c.pill.t.length*6.2-16}px; top:${c.y+c.h-11}px`;
+      stage.appendChild(p);
+    }
+  });
+
+  let svg='';
+  EDGES.forEach(([a,b,cls])=>{
+    const A=pos[a], B=pos[b];
+    const ay=A.y+A.h/2, by=B.y+B.h/2;
+    const ax=A.x+A.w, bx=B.x;
+    let d;
+    if(Math.abs(ay-by)<3){
+      d=`M ${ax} ${ay} L ${bx-7} ${by}`;
+    } else {
+      const mx=ax+(bx-ax)*0.55;
+      d=`M ${ax} ${ay} C ${mx} ${ay}, ${mx} ${by}, ${bx-7} ${by}`;
+    }
+    if(a===b) return;
+    // vertical drop (pos -> sql -> mtg)
+    if(Math.abs(ax-(B.x+B.w))<1 || (A.x===B.x && by>ay)){
+      const cx=A.x+A.w/2;
+      d=`M ${cx} ${A.y+A.h} L ${cx} ${B.y-7}`;
+      svg+=`<path class="base" d="${d}"/><path class="flow ${cls}" d="${d}"/>`+
+           `<path class="arrow ${cls}" d="M ${cx} ${B.y-1} l -5 -9 h 10 z"/>`;
+      return;
+    }
+    svg+=`<path class="base" d="${d}"/><path class="flow ${cls}" d="${d}"/>`+
+         `<path class="arrow ${cls}" d="M ${bx-1} ${by} l -8 -5 v 10 z"/>`;
+  });
+  wires.setAttribute('viewBox',`0 0 ${STAGE_W} ${STAGE_H}`);
+  wires.style.width=STAGE_W+'px'; wires.style.height=STAGE_H+'px';
+  wires.innerHTML=svg;
+
+  function fit(){
+    const pad=34;
+    const s=Math.min((window.innerWidth-pad)/STAGE_W,(window.innerHeight-pad)/STAGE_H);
+    stage.style.transform=`translate(-50%,-50%) scale(${s})`;
+  }
+  fit(); window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){ document.fonts.ready.then(fit); }
+</script>
+</body>
+</html>
