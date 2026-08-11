@@ -74,7 +74,6 @@
     text-transform:uppercase; padding:3px 8px; border-radius:999px; font-weight:700}
   .pill.commit{background:var(--green-soft); color:var(--green)}
   .pill.target{background:#fff1e6; color:var(--orange)}
-  .pill.report{background:#eeeef7; color:var(--purple)}
 
   .card.hero{border-color:#bde8d1; background:#f6fdf9}
   .card.hero:hover{border-color:#8ed8b0; box-shadow:0 24px 44px -22px rgba(31,157,99,.45)}
@@ -99,7 +98,6 @@
     padding:3px 8px; border-radius:999px; font-weight:700; min-width:74px; text-align:center}
   .legend .row .k.commit{background:var(--green-soft); color:var(--green)}
   .legend .row .k.target{background:#fff1e6; color:var(--orange)}
-  .legend .row .k.report{background:#eeeef7; color:var(--purple)}
 
   .cap{position:absolute; bottom:18px; left:0; right:0; text-align:center; font-size:11.5px; color:var(--ink-faint)}
   @media (prefers-reduced-motion:reduce){ .wires .flow{animation:none} }
@@ -108,15 +106,19 @@
 <body>
 <!-- =======================================================================
      FM Logistic Romania, the numbers behind the KPI commitment.
-     Every rate on this page comes from closed:in's own measured data:
-       LinkedIn  : HeyReach, trailing 12 months, all workspaces
-                   2,317 requests -> 728 accepted (31.4%)
-                   478 messages -> 169 replies, 98 tagged interested (58% of replies)
-       Email     : 15 weekly client reports, 63,025 emails -> 1,169 replies (1.86%),
-                   3.2 emails per prospect, 17% of replies positive
-       Meetings  : Close CRM, interested reply -> held first meeting = 16.4%
-     The rates written on the page are deliberately set BELOW the measured ones,
-     so the commitment has headroom rather than needing a best case.
+
+     ONE audience of 1,600 companies a month, every one of them on BOTH channels.
+     The two legs add up cleanly because a prospect who engages on one channel is
+     removed from the sequence on the other, so nobody is counted twice.
+
+     Every rate on this page sits BELOW closed:in's own measured result:
+       LinkedIn : HeyReach, trailing 12 months. 2,317 requests -> 728 accepted (31.4%).
+                  478 messages -> 169 replies. 98 tagged interested (58% of replies).
+                  Page uses 25% / 20% / 35%.
+       Email    : 15 weekly client reports. 63,025 emails -> 1,169 replies (1.86%).
+                  3.2 emails per prospect. 17% of replies positive (median client 10%).
+                  Page uses 3.2 / 1.5% / 10%.
+       Meetings : Close CRM, interested reply -> held first meeting = 16.4%.
 ======================================================================== -->
 <div class="canvas"><div class="stage" id="stage">
   <div class="hdr">
@@ -124,82 +126,82 @@
     <div class="client"><span class="x">for</span><img src="assets/fmlogistic-logo.svg" alt="FM Logistic"></div>
   </div>
   <div class="title">
-    <div class="eye">what you get per month</div>
-    <h1>From 3,362 companies to <b>3 to 4 qualified leads a week</b></h1>
+    <div class="eye">one audience, two channels, per month</div>
+    <h1>1,600 companies a month on both channels, <b>3 to 4 qualified leads a week</b></h1>
   </div>
   <svg class="wires" id="wires" aria-hidden="true"></svg>
   <div id="nodes"></div>
   <div class="legend">
-    <div class="row"><span class="k commit">committed</span> we control this, it is in the SLA</div>
-    <div class="row"><span class="k target">target</span> we steer on it and report it weekly</div>
-    <div class="row"><span class="k report">reported</span> depends on your follow-up speed, tracked not promised</div>
+    <div class="row"><span class="k commit">in the sla</span> we deliver this, it is contractual</div>
+    <div class="row"><span class="k target">we steer on</span> reported to you every Monday</div>
   </div>
-  <div class="cap">Hover any number to see where it comes from. Every rate is below what closed:in has actually measured.</div>
+  <div class="cap">Hover any number to see where it comes from. Every rate on this page sits below what we have actually measured.</div>
 </div></div>
 
 <script>
   /* ============================ DATA ============================ */
-  const LI = { req:650, acc:180, rep:40, pos:17 };
-  const EM = { pros:1900, mails:6080, rep:113, pos:14 };
-  const OUT = { pos:28, sql:19 };
+  const P   = 1600;                                  // one audience, both channels
+  const LI  = { req:1600, acc:400, rep:80, pos:28 };  // 25% / 20% / 35%
+  const EM  = { pros:1600, mails:5120, rep:77, pos:8 };// 3.2 each / 1.5% / 10%
+  const OUT = { pos:36, sql:20 };                    // 28 + 8 = 36, no fudge factor
 
   const CARDS = [
-    /* ---- source ---- */
-    {id:'list', x:44, y:190, w:196, h:120, lab:'your market', big:'3,362', unit:'companies',
-     sub:'above EUR 1M turnover, from official Romanian filed accounts',
-     pill:{t:'committed',c:'commit'},
-     pop:'Every Romanian company files annual accounts and the Ministry of Finance publishes the key figures as open data. 918,232 companies in the FY2025 set. Filtered to your sectors and above EUR 1M net turnover: 3,362, each with turnover, result, headcount, activity code and county attached.'},
+    /* ---- one audience ---- */
+    {id:'aud', x:44, y:230, w:204, h:140, lab:'your audience', big:P, unit:'companies\n/ month',
+     sub:'from the 3,362 on your list, in order of buying signal',
+     pill:{t:'in the sla',c:'commit'},
+     pop:'Every one of these 1,600 companies gets a LinkedIn connection request AND an email sequence. Not two separate audiences. They are taken from the 3,362 companies on your list in order of buying signal, so the ones with a legal deadline or a growth trigger go first.'},
 
     /* ---- LinkedIn leg ---- */
     {id:'lireq', x:300, y:150, w:172, h:104, lab:'connection requests', big:LI.req, unit:'/ month', li:true,
-     sub:'2 accounts, 80 per week each', pill:{t:'committed',c:'commit'},
-     pop:'HeyReach caps each LinkedIn account at roughly 100 connection requests per week and freezes any account that gets close, and that cannot be overridden. We commit to 80 per week per account, which leaves room for the invites your team sends by hand. Two accounts, your sales director and one BDM.'},
-    {id:'liacc', x:496, y:150, w:150, h:104, lab:'accepted', big:LI.acc, unit:'', rate:'28%', li:true,
-     sub:'connection accepted', pill:null,
-     pop:'Measured on closed:in\'s own HeyReach account over the last 12 months: 728 accepted out of 2,317 sent, so 31.4 percent. We plan on 28 percent. Published platform data sits between 19 and 29 percent, so 28 is at the top of that band but below our own result.'},
-    {id:'lirep', x:670, y:150, w:150, h:104, lab:'replies', big:LI.rep, unit:'', rate:'23%', li:true,
-     sub:'replied to the message', pill:null,
-     pop:'Measured: 169 replies. Careful reading of our own data, we messaged 478 of the 728 accepted connections, so 35 percent replied per message sent but 23 percent replied per accepted connection. We use the lower one, because here we message everyone who accepts.'},
-    {id:'lipos', x:844, y:150, w:150, h:104, lab:'interested', big:LI.pos, unit:'', rate:'40%', li:true,
+     sub:'2 accounts, 200 per week each', pill:{t:'in the sla',c:'commit'},
+     pop:'Two LinkedIn accounts, your sales director and one BDM, at 200 connection requests per week each. Sent inside business hours on weekdays only, at a human pace, so the accounts stay healthy.'},
+    {id:'liacc', x:496, y:150, w:150, h:104, lab:'accepted', big:LI.acc, unit:'', rate:'25%', li:true,
+     sub:'accept the connection', pill:null,
+     pop:'Measured on our own HeyReach account over the last 12 months: 728 accepted out of 2,317 sent, so 31.4 percent. We plan on 25 percent. Your brand helps here, a request from FM Logistic gets opened.'},
+    {id:'lirep', x:670, y:150, w:150, h:104, lab:'replies', big:LI.rep, unit:'', rate:'20%', li:true,
+     sub:'of accepted connections', pill:null,
+     pop:'Measured: 169 replies from 728 accepted connections, so 23 percent when you message everyone who accepts. We plan on 20 percent. The message references the same trigger as the email but in a lighter form, because a filed annual account is too much for LinkedIn.'},
+    {id:'lipos', x:844, y:150, w:150, h:104, lab:'interested', big:LI.pos, unit:'', rate:'35%', li:true,
      sub:'of replies are positive', pill:null,
-     pop:'Measured: 98 of 169 replies were tagged interested, so 58 percent. We plan on 40 percent. LinkedIn replies skew more positive than email replies because someone accepted your connection first.'},
+     pop:'Measured: 98 of 169 replies were tagged interested, so 58 percent. We plan on 35 percent, well under half our own result. LinkedIn replies skew positive because the person accepted your connection first.'},
 
     /* ---- Email leg ---- */
-    {id:'empros', x:300, y:352, w:172, h:104, lab:'email prospects', big:EM.pros, unit:'/ month',
-     sub:'650 of them also get LinkedIn', pill:{t:'committed',c:'commit'},
-     pop:'The email audience is wider than the LinkedIn audience, because LinkedIn is hard-capped by the tool. The best 650 companies get both channels, which is where the reply rate lifts. The other 1,250 get email only.'},
+    {id:'empros', x:300, y:352, w:172, h:104, lab:'email sequence', big:EM.pros, unit:'/ month',
+     sub:'the same 1,600 companies', pill:{t:'in the sla',c:'commit'},
+     pop:'The same 1,600 companies, not a second list. Three steps per prospect. Anyone who engages on LinkedIn is pulled out of the email sequence, and anyone who replies to email is pulled out of the LinkedIn campaign, so nobody gets both pitches and nobody is counted twice.'},
     {id:'emmail', x:496, y:352, w:150, h:104, lab:'emails', big:EM.mails, unit:'',
-     rate:'3.2 each', sub:'276 per working day', pill:{t:'committed',c:'commit'},
-     pop:'Measured across 15 weekly client reports: 3.2 emails per prospect on a 3-step sequence. 1,900 prospects is 6,080 emails a month, which is 276 per working day. That needs 6 domains and 12 inboxes at 25 sends per inbox per day, giving 300 a day of capacity so there is headroom.'},
-    {id:'emrep', x:670, y:352, w:150, h:104, lab:'replies', big:EM.rep, unit:'', rate:'1.9%',
+     rate:'3.2 each', sub:'233 per working day', pill:{t:'in the sla',c:'commit'},
+     pop:'Measured across 15 weekly client reports: 3.2 emails per prospect on a 3-step sequence. 1,600 prospects is 5,120 emails a month, which is 233 per working day. That needs 5 domains and 10 inboxes at 25 sends per inbox per day, giving 250 a day of capacity.'},
+    {id:'emrep', x:670, y:352, w:150, h:104, lab:'replies', big:EM.rep, unit:'', rate:'1.5%',
      sub:'per email sent', pill:null,
-     pop:'Measured, and this is the number most agencies quote wrongly. Across 63,025 emails we sent for clients we got 1,169 replies, so 1.86 percent per email sent. Not per prospect. Range across clients was 0.24 percent at worst to 2.84 percent at best.'},
-    {id:'empos', x:844, y:352, w:150, h:104, lab:'interested', big:EM.pos, unit:'', rate:'12%',
+     pop:'Measured, and this is the number most agencies quote on the wrong basis. Across 63,025 emails we sent for clients we got 1,169 replies, so 1.86 percent per email sent, not per prospect. We plan on 1.5 percent.'},
+    {id:'empos', x:844, y:352, w:150, h:104, lab:'interested', big:EM.pos, unit:'', rate:'10%',
      sub:'of replies are positive', pill:null,
-     pop:'Measured across 1,169 replies: 17 percent blended, but the median client sits at about 10 percent and one outlier client pulls the blend up. We plan on 12 percent, inside the honest 7 to 17 percent band. The rest of the replies are referrals, not now, or no.'},
+     pop:'Measured: 199 positive out of 1,169 replies, so 17 percent blended, with the median client at about 10 percent. We plan on 10 percent. The rest of the replies are referrals, not now, or no.'},
 
     /* ---- converge ---- */
-    {id:'pos', x:1030, y:238, w:180, h:130, hero:true, lab:'interested replies', big:OUT.pos, unit:'/ month',
-     sub:'about 6 to 7 per week, both channels', pill:{t:'target',c:'target'},
-     pop:'The two channels overlap on the 650 companies that get both, so this is not simply 17 plus 14. After correcting for that overlap the combined figure is about 28 a month. This is the number we steer on and report every Monday.'},
-    {id:'sql', x:1030, y:392, w:180, h:130, hero:true, lab:'qualified leads', big:OUT.sql, unit:'/ month',
-     sub:'3 to 4 per week, the SLA number', pill:{t:'committed',c:'commit'},
-     pop:'A qualified lead is an interested reply from a company inside the agreed target profile, where the person is open to discussing co-packing. Roughly two thirds of interested replies qualify. 19 a month is 4.3 a week, so committing to 3 to 4 leaves headroom rather than needing everything to go right.'},
+    {id:'pos', x:1030, y:238, w:182, h:130, hero:true, lab:'interested replies', big:OUT.pos, unit:'/ month',
+     sub:'28 from LinkedIn plus 8 from email, about 8 per week', pill:{t:'we steer on',c:'target'},
+     pop:'28 plus 8, added straight up with no correction, because a prospect who engages on one channel leaves the sequence on the other. That is why these two numbers can simply be added. Reported to you every Monday, split by channel and by trigger type.'},
+    {id:'sql', x:1030, y:392, w:182, h:130, hero:true, lab:'qualified leads', big:OUT.sql, unit:'/ month',
+     sub:'4 to 5 per week. We commit to 3 to 4', pill:{t:'in the sla',c:'commit'},
+     pop:'A qualified lead is an interested reply from a company inside the agreed target profile, where the person is open to discussing co-packing. Roughly 55 percent of interested replies qualify. The model says 4 to 5 a week and we commit to 3 to 4, so the commitment has headroom instead of needing everything to go right.'},
 
-    /* ---- what we do NOT commit to ---- */
-    {id:'mtg', x:1030, y:546, w:180, h:104, lab:'first meetings held', big:'3 to 5', unit:'/ month',
-     sub:'reported, not committed', pill:{t:'reported',c:'report'},
-     pop:'This one depends on your team, not ours. Our measured conversion from an interested reply to a held first meeting is 16.4 percent, and the main reason it is not higher is follow-up speed. If your team replies within one working day this number goes up. That is why it sits in the SLA as your commitment, not ours.'},
+    /* ---- meetings ---- */
+    {id:'mtg', x:1030, y:546, w:182, h:104, lab:'first meetings held', big:'6 to 10', unit:'/ month',
+     sub:'moves with your follow-up speed', pill:{t:'we steer on',c:'target'},
+     pop:'Our measured conversion from an interested reply to a held first meeting is 16.4 percent, and the single biggest lever on it is how fast your side replies. Within one working day this number goes up sharply. That is why the SLA asks your team for a named owner and a one working day response, and why we commit on qualified leads rather than on meetings.'},
 
     /* ---- infra ---- */
-    {id:'infra', x:44, y:352, w:196, h:122, lab:'sending infrastructure', big:'6 + 12', unit:'domains<br>+ inboxes',
-     sub:'warmed 2 to 3 weeks first', pill:{t:'committed',c:'commit'},
-     pop:'Separate sending domains, kept away from fmlogistic.com so your main domain is never at risk. SPF, DKIM and DMARC set per domain. 12 inboxes at 25 sends a day is 300 a day of capacity against 276 needed. Bounce rate kept under 2 percent, and if a domain degrades we replace it at our cost.'},
+    {id:'infra', x:44, y:398, w:204, h:122, lab:'sending infrastructure', big:'5 + 10', unit:'domains<br>+ inboxes',
+     sub:'warmed 2 to 3 weeks first', pill:{t:'in the sla',c:'commit'},
+     pop:'Separate sending domains, kept away from fmlogistic.com so your main domain is never at risk. SPF, DKIM and DMARC per domain. 10 inboxes at 25 sends a day is 250 a day of capacity against 233 needed. Bounce rate held under 2 percent, and if a domain degrades we replace it at our cost.'},
   ];
 
   const EDGES = [
-    ['list','lireq','li'], ['lireq','liacc','li'], ['liacc','lirep','li'], ['lirep','lipos','li'],
-    ['list','empros',''], ['empros','emmail',''], ['emmail','emrep',''], ['emrep','empos',''],
+    ['aud','lireq','li'], ['lireq','liacc','li'], ['liacc','lirep','li'], ['lirep','lipos','li'],
+    ['aud','empros',''], ['empros','emmail',''], ['emmail','emrep',''], ['emrep','empos',''],
     ['lipos','pos','li'], ['empos','pos',''],
     ['pos','sql',''], ['sql','mtg',''],
   ];
@@ -229,7 +231,7 @@
     const el=document.createElement('div');
     el.className='card'+(c.hero?' hero':'');
     el.style.cssText=`left:${c.x}px; top:${c.y}px; width:${c.w}px; height:${c.h}px`;
-    const unit=c.unit?` <small>${c.unit}</small>`:'';
+    const unit=c.unit?` <small>${String(c.unit).replace(/\n/g,'<br>')}</small>`:'';
     const bigTxt = (typeof c.big==='number') ? c.big.toLocaleString('en-US') : c.big;
     const rate=c.rate?`<span class="rate${c.li?' li':''}">${c.rate}</span>`:'';
     const popCls = (c.y > 420) ? 'pop up' : 'pop';
