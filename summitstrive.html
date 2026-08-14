@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>closed:in, zo werken we, voor Summit Strive</title>
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700,800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#15151c; --ink-dim:#6c6c79; --ink-faint:#9a9aa6;
+    --line:#e8e8ef; --line-2:#dcdce6;
+    --orange:#e75e0f; --orange-soft:#f4a877; --purple:#7877c6;
+    --node:#ffffff;
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0; height:100%; overflow:hidden; background:#fbfbfd; color:var(--ink);
+    font-family:'Satoshi',system-ui,-apple-system,sans-serif; -webkit-font-smoothing:antialiased}
+  body{background-color:#fbfbfd;
+    background-image:radial-gradient(#d9d9e3 1.1px, transparent 1.1px);
+    background-size:24px 24px}
+  .canvas{position:fixed; inset:0; overflow:hidden}
+  .stage{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    transform-origin:center center; width:1340px; height:720px}
+
+  /* header */
+  .hdr{position:absolute; top:24px; left:48px; right:48px; display:flex; align-items:center; justify-content:space-between}
+  .hdr .ci img{height:30px; display:block}
+  .hdr .client{display:flex; align-items:center; gap:12px; font-size:18px; font-weight:700; letter-spacing:-.02em}
+  .hdr .client .x{color:var(--ink-faint); font-weight:500}
+  .hdr .client .logo{height:38px; display:flex; align-items:center; gap:9px}
+  .hdr .client .logo img{height:34px; display:block}
+  .hdr .client .ph{height:32px; min-width:84px; border:1.5px solid var(--line-2); border-radius:8px;
+    display:grid; place-items:center; font-size:17px; color:var(--ink); font-weight:750; letter-spacing:-.03em; padding:0 15px}
+
+  /* titel */
+  .title{position:absolute; top:52px; left:0; right:0; text-align:center}
+  .title .eye{font-family:ui-monospace,"SF Mono",monospace; font-size:12px; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--orange); font-weight:600}
+  .title h1{margin:8px 0 0; font-size:28px; letter-spacing:-.03em; font-weight:700}
+  .title h1 b{color:var(--orange); font-weight:700}
+
+  /* svg lijnen (onder de blokken) */
+  .wires{position:absolute; inset:0; z-index:1; pointer-events:none; overflow:visible}
+  .wires .base{fill:none; stroke:var(--line-2); stroke-width:2.5}
+  .wires .flow{fill:none; stroke:var(--orange); stroke-width:2.5; stroke-dasharray:2 9; stroke-linecap:round;
+    animation:flow 1.1s linear infinite}
+  .wires .arrow{fill:var(--orange)}
+  .wires .loop{fill:none; stroke:var(--orange-soft); stroke-width:2; stroke-dasharray:7 7; animation:flow 1.2s linear infinite}
+  .wires .crm{fill:none; stroke:var(--purple); stroke-width:2; stroke-dasharray:7 7; animation:flow 1.3s linear infinite}
+  @keyframes flow{to{stroke-dashoffset:-22}}
+
+  /* hoofdblokken */
+  .node{position:absolute; z-index:2; background:var(--node); border:1px solid var(--line);
+    border-radius:18px; padding:18px 16px 16px;
+    box-shadow:0 14px 34px -20px rgba(20,20,50,.30), 0 1px 2px rgba(20,20,50,.05);
+    transition:transform .4s var(--ease), box-shadow .4s var(--ease), border-color .4s var(--ease)}
+  .node:hover{transform:translateY(-4px); border-color:#f7cdb0;
+    box-shadow:0 24px 44px -22px rgba(231,94,15,.55), 0 1px 2px rgba(20,20,50,.05); z-index:20}
+  .node .num{position:absolute; top:12px; right:14px; font-family:ui-monospace,monospace; font-size:11px; color:var(--orange); font-weight:600}
+  .node .ico{display:flex; align-items:center; gap:7px; height:48px}
+  .node .ico .chip{width:46px; height:46px; border-radius:12px; background:#faf8f6; border:1px solid var(--line);
+    display:grid; place-items:center; overflow:hidden}
+  .node .ico .chip img{width:30px; height:30px; object-fit:contain; display:block}
+  .node .ico .chip img.fill{width:100%; height:100%; object-fit:cover}
+  .node .ico .chip svg{width:24px; height:24px}
+  .node h3{margin:14px 0 4px; font-size:16px; letter-spacing:-.02em; font-weight:650}
+  .node p{margin:0; font-size:12.5px; color:var(--ink-dim); line-height:1.35}
+  .node .tool{position:absolute; bottom:12px; right:14px; font-family:ui-monospace,monospace; font-size:9.5px;
+    letter-spacing:.04em; color:var(--ink-faint)}
+
+  /* "nieuw" label, hangt over de rand van een blok */
+  .badge{position:absolute; top:-9px; left:15px; background:var(--orange); color:#fff;
+    font-family:ui-monospace,monospace; font-size:8.5px; letter-spacing:.14em; text-transform:uppercase;
+    font-weight:700; padding:3px 9px; border-radius:999px; box-shadow:0 6px 14px -8px rgba(231,94,15,.9)}
+
+  /* de twee kanalen, stap 04 */
+  .lanewrap{position:absolute; z-index:1; border:1.5px dashed #f6cdaf; border-radius:22px;
+    background:rgba(231,94,15,.035)}
+  .lanewrap .num{position:absolute; top:5px; right:16px; font-family:ui-monospace,monospace; font-size:11px;
+    color:var(--orange); font-weight:600}
+  .lane{position:absolute; z-index:2; background:var(--node); border:1px solid var(--line); border-radius:16px;
+    display:flex; align-items:center; gap:11px; padding:0 14px;
+    box-shadow:0 14px 34px -20px rgba(20,20,50,.30), 0 1px 2px rgba(20,20,50,.05);
+    transition:transform .4s var(--ease), box-shadow .4s var(--ease), border-color .4s var(--ease)}
+  .lane:hover{transform:translateY(-4px); border-color:#f7cdb0;
+    box-shadow:0 24px 44px -22px rgba(231,94,15,.55); z-index:20}
+  .lane .chip{flex:0 0 36px; width:36px; height:36px; border-radius:11px; background:#faf8f6; border:1px solid var(--line);
+    display:grid; place-items:center; overflow:hidden; margin-bottom:12px}
+  .lane .chip img{width:23px; height:23px; object-fit:contain; display:block}
+  .lane .chip img.fill{width:100%; height:100%; object-fit:cover}
+  .lane h3{margin:0 0 3px; font-size:15px; letter-spacing:-.02em; font-weight:650; line-height:1.1}
+  .lane p{margin:0; font-size:11.5px; color:var(--ink-dim); line-height:1.3}
+  /* tool-label onder het icoontje, zodat het nooit tegen de tekst aanloopt */
+  .lane .tool{position:absolute; bottom:9px; left:14px; font-family:ui-monospace,monospace; font-size:8.5px;
+    letter-spacing:.03em; color:var(--ink-faint)}
+  .lane .badge{top:8px; left:auto; right:11px; font-size:8px; padding:2px 7px}
+  .lanepill{position:absolute; z-index:3; font-family:ui-monospace,monospace; font-size:9px; letter-spacing:.13em;
+    text-transform:uppercase; color:var(--orange); background:#fff; border:1px solid #f6cdaf; border-radius:999px;
+    padding:0 12px; height:22px; display:flex; align-items:center; transform:translateX(-50%);
+    box-shadow:0 6px 16px -10px rgba(20,20,50,.3); white-space:nowrap}
+
+  /* zijblokken die in een hoofdblok voeden */
+  .side{position:absolute; z-index:2; background:#fff; border:1px solid var(--line); border-radius:14px;
+    padding:11px 13px; box-shadow:0 10px 26px -18px rgba(20,20,50,.30);
+    transition:transform .4s var(--ease), box-shadow .4s var(--ease)}
+  .side:hover{transform:translateY(-3px); z-index:20}
+  .side .slabel{font-family:ui-monospace,monospace; font-size:9.5px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--ink-faint); margin-bottom:9px}
+  .side .slogos{display:flex; gap:8px; align-items:center}
+  .side .slogos .l{width:30px; height:30px; border-radius:8px; background:#faf8f6; border:1px solid var(--line);
+    display:grid; place-items:center; overflow:hidden}
+  .side .slogos .l img{width:20px; height:20px; object-fit:contain; display:block}
+  .side .slogos .l img.fill{width:100%; height:100%; object-fit:cover}
+  .side .slogos .l svg{width:18px; height:18px}
+
+  /* uitleg bij hover */
+  .pop{position:absolute; left:50%; top:calc(100% + 11px); transform:translateX(-50%) translateY(5px);
+    width:246px; background:#fff; border:1px solid var(--line-2); border-radius:12px; padding:12px 14px;
+    font-size:11.5px; line-height:1.5; color:var(--ink-dim); text-align:left;
+    box-shadow:0 20px 44px -18px rgba(20,20,50,.5); opacity:0; pointer-events:none;
+    transition:opacity .22s var(--ease), transform .22s var(--ease); z-index:30}
+  .pop b{color:var(--ink); font-weight:650}
+  .pop::before{content:""; position:absolute; top:-6px; left:50%; transform:translateX(-50%) rotate(45deg);
+    width:11px; height:11px; background:#fff; border-left:1px solid var(--line-2); border-top:1px solid var(--line-2)}
+  .node:hover .pop, .side:hover .pop, .lane:hover .pop{opacity:1; transform:translateX(-50%) translateY(0)}
+  .pop-up .pop{top:auto; bottom:calc(100% + 11px)}
+  .pop-up .pop::before{top:auto; bottom:-6px; border-left:none; border-top:none;
+    border-right:1px solid var(--line-2); border-bottom:1px solid var(--line-2)}
+
+  /* label bij een terugkoppel-lus */
+  .loop-label{position:absolute; z-index:2; font-family:ui-monospace,monospace; font-size:11px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--orange); background:#fff; padding:5px 12px; border:1px solid var(--line-2);
+    border-radius:999px; transform:translateX(-50%); box-shadow:0 6px 16px -10px rgba(20,20,50,.3)}
+  .loop-label.alt{color:var(--purple); border-color:#d2d1f0}
+
+  /* cadans-strip onderaan */
+  .cadence{position:absolute; z-index:2; left:50%; transform:translateX(-50%); bottom:60px;
+    display:flex; align-items:center; gap:9px; background:#fff; border:1px solid var(--line-2);
+    border-radius:999px; padding:8px 18px; box-shadow:0 12px 30px -20px rgba(20,20,50,.5)}
+  .cadence .tag{font-family:ui-monospace,monospace; font-size:9px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--orange); font-weight:600; padding-right:4px}
+  .cadence .it{display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--ink-dim); white-space:nowrap}
+  .cadence .it b{color:var(--ink); font-weight:650}
+  .cadence .it .c{width:20px; height:20px; border-radius:6px; background:#faf8f6; border:1px solid var(--line);
+    display:grid; place-items:center; overflow:hidden}
+  .cadence .it .c img{width:13px; height:13px; object-fit:contain; display:block}
+  .cadence .it .c img.fill{width:100%; height:100%; object-fit:cover}
+  .cadence .sep{color:#cfcfda; font-size:11px}
+
+  .cap{position:absolute; bottom:20px; left:0; right:0; text-align:center; font-size:12px; color:var(--ink-faint)}
+  @media (prefers-reduced-motion:reduce){ .wires .flow,.wires .loop,.wires .crm{animation:none} }
+</style>
+</head>
+<body>
+
+<!-- =======================================================================
+     Summit Strive, multichannel. Nederlands, want klant en doelgroep zijn NL.
+
+     Verschillen met flow-template.html:
+     1. CLIENT_NAME = "Summit Strive" met hun eigen wordmark. Hun oranje
+        (#e75e0f) vervangt het closed:in oranje in de hele flow.
+     2. Stap 04 is gesplitst in twee banen: LinkedIn en e-mail, op dezelfde
+        DGA. Dat is de kern van deze versie, want dit is de plaat waarmee
+        Max multichannel uitlegt aan Luuk en Bart.
+     3. Website visitors zijn eruit (bewust, op verzoek), net als de losse
+        blokken voor handmatige kwalificatie en wekelijkse sync. Bewust
+        simpel gehouden: data zoeken, dan multichannel.
+     4. Stap 03 (mailinfra + warmup) en de e-mailbaan hebben een "nieuw"
+        label, zodat in één oogopslag zichtbaar is wat erbij komt ten
+        opzichte van de LinkedIn-only situatie van nu.
+     5. Onderaan een cadans-strip die laat zien hoe de twee kanalen elkaar
+        afwisselen over 11 dagen.
+     6. Geen CRM-blok: Summit Strive draait geen CRM, opvolging loopt via het
+        dashboard en de wekelijkse sync.
+======================================================================== -->
+<div class="canvas"><div class="stage" id="stage">
+  <div class="hdr">
+    <div class="ci"><img src="assets/closedin-logo-dark.png" alt="closed:in"></div>
+    <div class="client"><span class="x">voor</span><span class="logo" id="clientLogo"></span></div>
+  </div>
+  <div class="title">
+    <div class="eye">zo werken we &middot; multichannel</div>
+    <h1>Van het KvK-register naar een <b>gesprek met de DGA</b></h1>
+  </div>
+  <svg class="wires" id="wires" aria-hidden="true"></svg>
+  <div id="nodes"></div>
+  <div class="cap">Beweeg over een blok voor de uitleg. Eén systeem, LinkedIn en mail op dezelfde ondernemer, elke week bijgestuurd.</div>
+</div></div>
+
+<script>
+  /* ====================== CONFIG ======================
+     Gebouwd na de kickoff met Luuk en Bart. De cijfers komen uit de
+     TAM-analyse (6.200 tot 6.800 bedrijven in de basis, 300 tot 450 na
+     filtering) en de afspraken uit de meeting van 19 juni.
+  ================================================================= */
+  const CLIENT_NAME = "Summit Strive";
+  const CLIENT_LOGO = "assets/summitstrive-logo.png";   // wordmark, dus zonder losse naam ernaast
+
+  // logo's met een eigen gekleurd vlak: die vullen het hele vierkantje
+  const FILL = ['linkedin.png','heyreach.png'];
+  const isFill = p => FILL.some(f => p.endsWith(f));
+
+  const ICONS = {
+    target:'<svg viewBox="0 0 24 24" fill="none" stroke="#e75e0f" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="#e75e0f" stroke="none"/></svg>',
+    repeat:'<svg viewBox="0 0 24 24" fill="none" stroke="#e75e0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>',
+    kvk:'<svg viewBox="0 0 24 24" fill="none" stroke="#e75e0f" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9.5 10h0M9.5 14h0M14.5 10h0M14.5 14h0"/><path d="M10.5 21v-4h3v4"/></svg>',
+    inbox:'<svg viewBox="0 0 24 24" fill="none" stroke="#e75e0f" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l1.6 2.6h6.8L17 12h4"/><path d="M5.2 5.4h13.6l2.2 6.6v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5z"/></svg>'
+  };
+
+  /* De hoofdketen, links naar rechts. Kolom 3 is de splitsing in twee kanalen. */
+  const COLS = [
+    {type:'node', title:'Zoekprofiel', sub:'techniek, max 1 uur van Arnhem', media:[{icon:'target'}], tool:'',
+      detail:'Zelfstandige technische bedrijven: metaal- en machinebouw, apparatenbouw, fijnmechanica en technische toelevering. Maximaal een uur rijden vanaf Arnhem, geen hemelsbrede cirkel meer. Omzet ruwweg 5 tot 20 miljoen, 40 tot 150 medewerkers, geleid door een DGA. Van de 6.200 tot 6.800 bedrijven die in de basis in aanmerking komen blijven er na alle filters <b>300 tot 450</b> over die echt binnen het overnameprofiel vallen.'},
+
+    {type:'node', title:'Lijst + kwalificatie', sub:'50 per week, met de hand nagelopen', media:[{logo:'assets/clay.png'}], tool:'Clay',
+      detail:'Uit het KvK-register filteren we eerst op bedrijven die <b>echt iets maken</b>. Daarna gaan groep-dochters eruit, bedrijven die op papier klein leken maar te groot blijken, en familiebedrijven waar de opvolging binnen de familie al geregeld is. In Clay verrijken we op omvang en omzet en zoeken we via Sales Navigator per bedrijf de eigenaar of DGA, geen sales- of productfuncties.'},
+
+    {type:'node', title:'Mailinfra + warmup', sub:'aparte domeinen, niet summitstrive.nl', media:[{logo:'assets/instantly.png'}], tool:'Instantly', badge:'nieuw',
+      detail:'Voor het mailkanaal zetten we <b>losse verzenddomeinen</b> op, gescheiden van summitstrive.nl, zodat jullie eigen domein nooit risico loopt. SPF, DKIM en DMARC per domein, daarna 2 tot 3 weken warmup op 25 mails per inbox per dag voordat de eerste echte mail vertrekt. Bij elke DGA zoeken we in Clay het zakelijke mailadres en verifiëren we dat vooraf, zodat er niets bounced.'},
+
+    {type:'split', num:'04', pill:'zelfde DGA, beide kanalen', lanes:[
+      {title:'LinkedIn', sub:'connectie + bericht vanaf Luuk', logo:'assets/linkedin.png', tool:'HeyReach',
+       detail:'Connectieverzoek <b>zonder bericht</b> vanaf Luuk zijn eigen account, dat geeft de hoogste accept rate. Wordt het geaccepteerd, dan volgt het persoonlijke bericht. Zo niet, dan de dag erna een profielbezoek. Eén vriendelijke reminder na ongeveer anderhalve week, geen derde bericht. Maximaal 200 verzoeken per week, verdeeld over de werkdagen.'},
+      {title:'E-mail', sub:'drie mails, eigen domeinen', logo:'assets/instantly.png', tool:'Instantly', badge:'nieuw',
+       detail:'Het kanaal dat erbij komt. Dezelfde ondernemer, hetzelfde verhaal, maar dan in de inbox: mail 1, een korte opvolging vier dagen later en een laatste na nog drie dagen. Mail vangt de DGA die het connectieverzoek niet accepteert of nauwelijks op LinkedIn zit, en dat is in deze doelgroep een groot deel. Platte tekst, geen opmaak, zodat het overkomt als een gewoon bericht van Luuk.'}
+    ]},
+
+    {type:'node', title:'Reacties + gesprekken', sub:'beide kanalen op één plek', media:[{icon:'inbox'}], tool:'dashboard',
+      detail:'Reacties uit LinkedIn en mail komen samen in één overzicht: verstuurd, geaccepteerd, gereageerd, positief en gesprekken ingepland. Een positieve reactie krijgen jullie <b>direct door</b>, zodat Luuk kan opvolgen op het moment dat de aandacht erbij is. Wie nu nog niet wil blijft in beeld voor een volgende ronde.'},
+
+    {type:'node', title:'Bijsturen', sub:'elke week, samen', media:[{icon:'repeat'}], tool:'',
+      detail:'Elke week een rapportage en een korte sync: wat ging eruit, wat kwam er terug, hoeveel gesprekken staan er. Daarop scherpen we targeting en copy aan. <b>Reply rate, positieve reacties en gesprekken</b> zijn de cijfers waar we op sturen. Passen de bedrijven niet bij het profiel, dan is dat onze filtering en die passen we aan.'}
+  ];
+
+  /* Zijblok met de databronnen, voedt de lijstbouw (target = kolomnummer) */
+  const SIDE = [
+    {target:1, dx:0, w:264, label:'databronnen',
+      media:[{icon:'kvk'},{logo:'assets/linkedin.png'},{logo:'assets/clay.png'},{logo:'assets/claude.png'}],
+      detail:'Het KvK-register als basis, Sales Navigator om per bedrijf de juiste DGA te vinden, Clay voor omvang, omzet en contactgegevens, en eigen research die per bedrijf de website en de structuur naloopt. Het <b>UBO-register</b> en KvK-wijzigingen liggen klaar als extra check op eigenaarschap zodra we die willen inzetten.'}
+  ];
+
+  /* De cadans onderin: hoe de twee kanalen elkaar afwisselen */
+  const CADENCE = [
+    {ch:'li', dag:'dag 1',  wat:'connectieverzoek'},
+    {ch:'ml', dag:'dag 2',  wat:'mail 1'},
+    {ch:'li', dag:'dag 4',  wat:'profielbezoek'},
+    {ch:'ml', dag:'dag 6',  wat:'mail 2'},
+    {ch:'ml', dag:'dag 9',  wat:'mail 3'},
+    {ch:'li', dag:'dag 11', wat:'reminder'}
+  ];
+  /* ==================================================== */
+
+  const STAGE_W=1340, STAGE_H=720;
+  const PAD=48, NW=185, GAP=26, ROW_Y=266, NH=196;
+  const SIDE_Y=132, SIDE_H=80;
+  const LANE_H=85, LANE_GAP=26;                 // 85 + 26 + 85 = 196, precies de hoogte van een hoofdblok
+  const PANEL_PAD_X=12, PANEL_TOP=ROW_Y-16, PANEL_BOT=ROW_Y+NH+16;
+  const stage=document.getElementById('stage');
+  const nodesEl=document.getElementById('nodes');
+  const wires=document.getElementById('wires');
+
+  // klantnaam + logo (het logo is een wordmark, dus zonder losse naam ernaast)
+  const cl=document.getElementById('clientLogo');
+  cl.innerHTML = CLIENT_LOGO
+    ? '<img src="'+CLIENT_LOGO+'" alt="'+CLIENT_NAME+'">'
+    : '<span class="ph">'+CLIENT_NAME+'</span>';
+
+  const chip = (m, cls) => m.icon
+    ? '<span class="'+cls+'">'+ICONS[m.icon]+'</span>'
+    : '<span class="'+cls+'"><img src="'+m.logo+'"'+(isFill(m.logo)?' class="fill"':'')+' alt=""></span>';
+
+  // posities per kolom
+  const N=COLS.length, xs=[];
+  for(let i=0;i<N;i++) xs.push(PAD + i*(NW+GAP));
+  const cy=ROW_Y+NH/2;
+  const laneY = i => i===0 ? ROW_Y : ROW_Y+LANE_H+LANE_GAP;      // bovenkant van baan i
+  const laneCy = i => laneY(i)+LANE_H/2;
+
+  // in- en uitgangspunten per kolom, zodat de splitsing vanzelf goed bedraad wordt
+  const exits = c => COLS[c].type==='split'
+    ? [{x:xs[c]+NW, y:laneCy(0)},{x:xs[c]+NW, y:laneCy(1)}]
+    : [{x:xs[c]+NW, y:cy}];
+  const enters = c => COLS[c].type==='split'
+    ? [{x:xs[c], y:laneCy(0)},{x:xs[c], y:laneCy(1)}]
+    : [{x:xs[c], y:cy}];
+
+  COLS.forEach((col,i)=>{
+    const x=xs[i];
+
+    if(col.type==='split'){
+      // omlijning om beide banen heen
+      const panel=document.createElement('div');
+      panel.className='lanewrap';
+      panel.style.cssText=`left:${x-PANEL_PAD_X}px; top:${PANEL_TOP}px; width:${NW+PANEL_PAD_X*2}px; height:${PANEL_BOT-PANEL_TOP}px`;
+      panel.innerHTML=`<span class="num">${col.num}</span>`;
+      nodesEl.appendChild(panel);
+
+      col.lanes.forEach((ln,k)=>{
+        const el=document.createElement('div');
+        el.className='lane'+(k===0?' pop-up':'');   // bovenste baan klapt zijn uitleg omhoog open
+        el.style.cssText=`left:${x}px; top:${laneY(k)}px; width:${NW}px; height:${LANE_H}px`;
+        el.innerHTML=chip({logo:ln.logo},'chip')+
+          `<div class="ltext"><h3>${ln.title}</h3><p>${ln.sub}</p></div>`+
+          (ln.badge?`<span class="badge">${ln.badge}</span>`:'')+
+          `<span class="tool">${ln.tool}</span><div class="pop">${ln.detail}</div>`;
+        nodesEl.appendChild(el);
+      });
+
+      // labeltje in de ruimte tussen de twee banen
+      const pill=document.createElement('div');
+      pill.className='lanepill';
+      pill.textContent=col.pill;
+      pill.style.cssText=`left:${x+NW/2}px; top:${ROW_Y+LANE_H+(LANE_GAP-22)/2}px`;
+      nodesEl.appendChild(pill);
+      return;
+    }
+
+    const node=document.createElement('div');
+    node.className='node';
+    node.style.cssText=`left:${x}px; top:${ROW_Y}px; width:${NW}px; height:${NH}px`;
+    node.innerHTML=`<span class="num">${String(i+1).padStart(2,'0')}</span>`+
+      `<div class="ico">${col.media.map(m=>chip(m,'chip')).join('')}</div>`+
+      `<h3>${col.title}</h3><p>${col.sub}</p>`+
+      (col.tool?`<span class="tool">${col.tool}</span>`:'')+
+      (col.badge?`<span class="badge">${col.badge}</span>`:'')+
+      `<div class="pop">${col.detail}</div>`;
+    nodesEl.appendChild(node);
+  });
+
+  // zijblokken
+  SIDE.forEach(sb=>{
+    const cx=xs[sb.target]+NW/2+(sb.dx||0);
+    const el=document.createElement('div');
+    el.className='side';
+    el.style.cssText=`left:${cx-sb.w/2}px; top:${SIDE_Y}px; width:${sb.w}px; height:${SIDE_H}px`;
+    el.innerHTML=`<div class="slabel">${sb.label}</div>`+
+      `<div class="slogos">${sb.media.map(m=>chip(m,'l')).join('')}</div>`+
+      `<div class="pop">${sb.detail}</div>`;
+    nodesEl.appendChild(el);
+  });
+
+  // cadans-strip
+  const cad=document.createElement('div');
+  cad.className='cadence';
+  cad.innerHTML='<span class="tag">cadans</span>'+CADENCE.map((c,i)=>{
+    const src=c.ch==='li'?'assets/linkedin.png':'assets/instantly.png';
+    return (i?'<span class="sep">&rsaquo;</span>':'')+
+      `<span class="it"><span class="c"><img src="${src}"${isFill(src)?' class="fill"':''} alt=""></span><b>${c.dag}</b> ${c.wat}</span>`;
+  }).join('');
+  stage.appendChild(cad);
+
+  /* ---------------- bedrading ---------------- */
+  const hwire=(x1,y1,x2,y2)=>{
+    const d=Math.max(GAP,x2-x1);
+    return `M ${x1} ${y1} C ${x1+d*0.55} ${y1}, ${x2-d*0.55} ${y2}, ${x2-7} ${y2}`;
+  };
+  let svg='';
+  for(let i=0;i<N-1;i++){
+    exits(i).forEach(a=>enters(i+1).forEach(b=>{
+      svg+=`<path class="base" d="${hwire(a.x,a.y,b.x,b.y)}"/><path class="flow" d="${hwire(a.x,a.y,b.x,b.y)}"/>`+
+           `<path class="arrow" d="M ${b.x-1} ${b.y} l -8 -5 v 10 z"/>`;
+    }));
+  }
+  // zijblokken naar beneden het hoofdblok in
+  SIDE.forEach(sb=>{
+    const cx=xs[sb.target]+NW/2+(sb.dx||0);
+    const tx=xs[sb.target]+NW/2+(sb.dx||0)*0.45;
+    const y1=SIDE_Y+SIDE_H, y2=(COLS[sb.target].type==='split'?PANEL_TOP:ROW_Y);
+    const d=`M ${cx} ${y1} C ${cx} ${y1+22}, ${tx} ${y2-22}, ${tx} ${y2-6}`;
+    svg+=`<path class="base" d="${d}"/><path class="flow" d="${d}"/><path class="arrow" d="M ${tx} ${y2} l -5 -9 h 10 z"/>`;
+  });
+  // terugkoppeling: elke week bijsturen (06 -> 02)
+  const by=ROW_Y+NH, r=18;
+  const yo=by+56;
+  const sxO=xs[5]+NW/2, exO=xs[1]+NW/2;
+  const arc=(sx,ex,y)=>`M ${sx} ${by} V ${y-r} Q ${sx} ${y} ${sx-r} ${y} H ${ex+r} Q ${ex} ${y} ${ex} ${y-r} V ${by+6}`;
+  svg+=`<path class="loop" d="${arc(sxO,exO,yo)}"/><path class="arrow" d="M ${exO} ${by} l -5 9 h 10 z" fill="#f4a877"/>`;
+  wires.setAttribute('viewBox',`0 0 ${STAGE_W} ${STAGE_H}`);
+  wires.style.width=STAGE_W+'px'; wires.style.height=STAGE_H+'px';
+  wires.innerHTML=svg;
+
+  const mkLabel=(txt,cls,cx,cyy)=>{ const l=document.createElement('div'); l.className='loop-label'+(cls?' '+cls:'');
+    l.textContent=txt; l.style.left=cx+'px'; l.style.top=(cyy-13)+'px'; stage.appendChild(l); };
+  mkLabel('elke week bijsturen','',(exO+sxO)/2,yo);
+
+  // de hele plaat op één scherm passen, zonder scrollen
+  function fit(){
+    const pad=36;
+    const s=Math.min((window.innerWidth-pad)/STAGE_W,(window.innerHeight-pad)/STAGE_H);
+    stage.style.transform=`translate(-50%,-50%) scale(${s})`;
+  }
+  fit(); window.addEventListener('resize',fit);
+  if(document.fonts&&document.fonts.ready){ document.fonts.ready.then(fit); }
+</script>
+</body>
+</html>
