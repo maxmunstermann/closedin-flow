@@ -171,8 +171,9 @@
      4. Stap 03 (mailinfra + warmup) en de e-mailbaan hebben een "nieuw"
         label, zodat in één oogopslag zichtbaar is wat erbij komt ten
         opzichte van de LinkedIn-only situatie van nu.
-     5. Onderaan een cadans-strip die laat zien hoe de twee kanalen elkaar
-        afwisselen over 11 dagen.
+     5. Onderaan een cadans-strip, één op één overgenomen uit de HeyReach-
+        sequence "BD's + VIP's Multichannel 2.0": eerst de LinkedIn-stappen
+        af, daarna pas de twee mails. Kanalen lopen niet door elkaar.
      6. Geen CRM-blok: Summit Strive draait geen CRM, opvolging loopt via het
         dashboard en de wekelijkse sync.
 ======================================================================== -->
@@ -187,7 +188,7 @@
   </div>
   <svg class="wires" id="wires" aria-hidden="true"></svg>
   <div id="nodes"></div>
-  <div class="cap">Beweeg over een blok voor de uitleg. Eén systeem, LinkedIn en mail op dezelfde ondernemer, elke week bijgestuurd.</div>
+  <div class="cap">Beweeg over een blok voor de uitleg. Eén systeem: eerst LinkedIn, daarna mail, op dezelfde ondernemer.</div>
 </div></div>
 
 <script>
@@ -222,10 +223,10 @@
       detail:'Voor het mailkanaal zetten we <b>losse verzenddomeinen</b> op, gescheiden van summitstrive.nl, zodat jullie eigen domein nooit risico loopt. SPF, DKIM en DMARC per domein, daarna 2 tot 3 weken warmup op 25 mails per inbox per dag voordat de eerste echte mail vertrekt. Bij elke DGA zoeken we in Clay het zakelijke mailadres en verifiëren we dat vooraf, zodat er niets bounced.'},
 
     {type:'split', num:'04', pill:'zelfde DGA, beide kanalen', lanes:[
-      {title:'LinkedIn', sub:'connectie + bericht vanaf Luuk', logo:'assets/linkedin.png', tool:'HeyReach',
-       detail:'Connectieverzoek <b>zonder bericht</b> vanaf Luuk zijn eigen account, dat geeft de hoogste accept rate. Wordt het geaccepteerd, dan volgt het persoonlijke bericht. Zo niet, dan de dag erna een profielbezoek. Eén vriendelijke reminder na ongeveer anderhalve week, geen derde bericht. Maximaal 200 verzoeken per week, verdeeld over de werkdagen.'},
-      {title:'E-mail', sub:'drie mails, eigen domeinen', logo:'assets/instantly.png', tool:'Instantly', badge:'nieuw',
-       detail:'Het kanaal dat erbij komt. Dezelfde ondernemer, hetzelfde verhaal, maar dan in de inbox: mail 1, een korte opvolging vier dagen later en een laatste na nog drie dagen. Mail vangt de DGA die het connectieverzoek niet accepteert of nauwelijks op LinkedIn zit, en dat is in deze doelgroep een groot deel. Platte tekst, geen opmaak, zodat het overkomt als een gewoon bericht van Luuk.'}
+      {title:'LinkedIn', sub:'connectie + 2 berichten', logo:'assets/linkedin.png', tool:'HeyReach',
+       detail:'Connectieverzoek <b>zonder bericht</b> vanaf Luuk zijn eigen account, dat geeft de hoogste accept rate. Na accept volgt het persoonlijke bericht, drie dagen later één vriendelijke reminder, en daarna een profielbezoek. Reageert iemand, dan stopt de rest van de sequence meteen. Een verzoek dat blijft liggen wordt na 25 dagen automatisch ingetrokken, zodat je uitnodigingslimiet vrij blijft. Maximaal 200 verzoeken per week, verdeeld over de werkdagen.'},
+      {title:'E-mail', sub:'2 mails, eigen domeinen', logo:'assets/instantly.png', tool:'Instantly', badge:'nieuw',
+       detail:'Het kanaal dat erbij komt, <b>aan het einde van de sequence</b> en niet door de LinkedIn-stappen heen. Pas als LinkedIn niets heeft opgeleverd gaat de lead naar de mail: twee follow-ups vanaf een eigen verzenddomein. Reageert iemand op LinkedIn, dan gaat er dus geen mail meer uit. Mail vangt de DGA die het connectieverzoek niet accepteert of nauwelijks op LinkedIn zit, en dat is in deze doelgroep een groot deel. Platte tekst, geen opmaak, zodat het overkomt als een gewoon bericht van Luuk.'}
     ]},
 
     {type:'node', title:'Reacties + gesprekken', sub:'beide kanalen op één plek', media:[{icon:'inbox'}], tool:'dashboard',
@@ -242,14 +243,15 @@
       detail:'Het KvK-register als basis, Sales Navigator om per bedrijf de juiste DGA te vinden, Clay voor omvang, omzet en contactgegevens, en eigen research die per bedrijf de website en de structuur naloopt. Het <b>UBO-register</b> en KvK-wijzigingen liggen klaar als extra check op eigenaarschap zodra we die willen inzetten.'}
   ];
 
-  /* De cadans onderin: hoe de twee kanalen elkaar afwisselen */
+  /* De cadans onderin: eerst LinkedIn af, daarna pas de mails.
+     Overgenomen uit de HeyReach-sequence (BD's + VIP's Multichannel 2.0). */
   const CADENCE = [
     {ch:'li', dag:'dag 1',  wat:'connectieverzoek'},
-    {ch:'ml', dag:'dag 2',  wat:'mail 1'},
-    {ch:'li', dag:'dag 4',  wat:'profielbezoek'},
-    {ch:'ml', dag:'dag 6',  wat:'mail 2'},
-    {ch:'ml', dag:'dag 9',  wat:'mail 3'},
-    {ch:'li', dag:'dag 11', wat:'reminder'}
+    {ch:'li', dag:'dag 4',  wat:'bericht 1'},
+    {ch:'li', dag:'dag 7',  wat:'bericht 2'},
+    {ch:'li', dag:'dag 10', wat:'profielbezoek'},
+    {ch:'ml', dag:'dag 13', wat:'mail 1'},
+    {ch:'ml', dag:'dag 17', wat:'mail 2'}
   ];
   /* ==================================================== */
 
