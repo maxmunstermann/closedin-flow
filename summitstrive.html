@@ -171,9 +171,11 @@
      4. Stap 03 (mailinfra + warmup) en de e-mailbaan hebben een "nieuw"
         label, zodat in één oogopslag zichtbaar is wat erbij komt ten
         opzichte van de LinkedIn-only situatie van nu.
-     5. Onderaan een cadans-strip, één op één overgenomen uit de HeyReach-
-        sequence "BD's + VIP's Multichannel 2.0": eerst de LinkedIn-stappen
-        af, daarna pas de twee mails. Kanalen lopen niet door elkaar.
+     5. Onderaan een cadans-strip. De LinkedIn-stappen komen één op één uit
+        de Summit Strive HeyReach-sequence (verzoek zonder bericht, bericht,
+        profielbezoek, reminder na 9 dagen, like). De twee mails volgen daar
+        pas na, volgens het Multichannel 2.0 patroon. Kanalen lopen dus niet
+        door elkaar heen.
      6. Geen CRM-blok: Summit Strive draait geen CRM, opvolging loopt via het
         dashboard en de wekelijkse sync.
 ======================================================================== -->
@@ -224,9 +226,9 @@
 
     {type:'split', num:'04', pill:'zelfde DGA, beide kanalen', lanes:[
       {title:'LinkedIn', sub:'connectie + 2 berichten', logo:'assets/linkedin.png', tool:'HeyReach',
-       detail:'Connectieverzoek <b>zonder bericht</b> vanaf Luuk zijn eigen account, dat geeft de hoogste accept rate. Na accept volgt het persoonlijke bericht, drie dagen later één vriendelijke reminder, en daarna een profielbezoek. Reageert iemand, dan stopt de rest van de sequence meteen. Een verzoek dat blijft liggen wordt na 25 dagen automatisch ingetrokken, zodat je uitnodigingslimiet vrij blijft. Maximaal 200 verzoeken per week, verdeeld over de werkdagen.'},
+       detail:'Connectieverzoek <b>zonder bericht</b> vanaf Luuk zijn eigen account, dat geeft de hoogste accept rate. Na accept een dag later het persoonlijke bericht, de dag erna een profielbezoek, negen dagen later één vriendelijke reminder en tot slot een like op een recente post. Reageert iemand, dan stopt de rest meteen. Wordt het verzoek niet geaccepteerd, dan volgen alleen het profielbezoek en de like, en wordt het verzoek na 21 dagen automatisch ingetrokken zodat je uitnodigingslimiet vrij blijft. Maximaal 200 verzoeken per week, verdeeld over de werkdagen.'},
       {title:'E-mail', sub:'2 mails, eigen domeinen', logo:'assets/instantly.png', tool:'Instantly', badge:'nieuw',
-       detail:'Het kanaal dat erbij komt, <b>aan het einde van de sequence</b> en niet door de LinkedIn-stappen heen. Pas als LinkedIn niets heeft opgeleverd gaat de lead naar de mail: twee follow-ups vanaf een eigen verzenddomein. Reageert iemand op LinkedIn, dan gaat er dus geen mail meer uit. Mail vangt de DGA die het connectieverzoek niet accepteert of nauwelijks op LinkedIn zit, en dat is in deze doelgroep een groot deel. Platte tekst, geen opmaak, zodat het overkomt als een gewoon bericht van Luuk.'}
+       detail:'Het kanaal dat erbij komt, <b>aan het einde van de sequence</b> en niet door de LinkedIn-stappen heen. Pas als LinkedIn niets heeft opgeleverd, of het verzoek niet is geaccepteerd, gaat de lead naar de mail: twee follow-ups vanaf een eigen verzenddomein. Reageert iemand op LinkedIn, dan gaat er dus geen mail meer uit. Mail vangt de DGA die het connectieverzoek niet accepteert of nauwelijks op LinkedIn zit, en dat is in deze doelgroep een groot deel. Platte tekst, geen opmaak, zodat het overkomt als een gewoon bericht van Luuk.'}
     ]},
 
     {type:'node', title:'Reacties + gesprekken', sub:'beide kanalen op één plek', media:[{icon:'inbox'}], tool:'dashboard',
@@ -243,15 +245,17 @@
       detail:'Het KvK-register als basis, Sales Navigator om per bedrijf de juiste DGA te vinden, Clay voor omvang, omzet en contactgegevens, en eigen research die per bedrijf de website en de structuur naloopt. Het <b>UBO-register</b> en KvK-wijzigingen liggen klaar als extra check op eigenaarschap zodra we die willen inzetten.'}
   ];
 
-  /* De cadans onderin: eerst LinkedIn af, daarna pas de mails.
-     Overgenomen uit de HeyReach-sequence (BD's + VIP's Multichannel 2.0). */
+  /* De cadans onderin: eerst LinkedIn helemaal af, daarna pas de mails.
+     De LinkedIn-stappen komen één op één uit de Summit Strive HeyReach-
+     sequence. De twee mails volgen het Multichannel 2.0 patroon. */
   const CADENCE = [
     {ch:'li', dag:'dag 1',  wat:'connectieverzoek'},
-    {ch:'li', dag:'dag 4',  wat:'bericht 1'},
-    {ch:'li', dag:'dag 7',  wat:'bericht 2'},
-    {ch:'li', dag:'dag 10', wat:'profielbezoek'},
-    {ch:'ml', dag:'dag 13', wat:'mail 1'},
-    {ch:'ml', dag:'dag 17', wat:'mail 2'}
+    {ch:'li', dag:'dag 2',  wat:'bericht 1'},
+    {ch:'li', dag:'dag 3',  wat:'profielbezoek'},
+    {ch:'li', dag:'dag 12', wat:'reminder'},
+    {ch:'li', dag:'dag 13', wat:'like'},
+    {ch:'ml', dag:'dag 16', wat:'mail 1'},
+    {ch:'ml', dag:'dag 20', wat:'mail 2'}
   ];
   /* ==================================================== */
 
