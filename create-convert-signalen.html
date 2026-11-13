@@ -1,0 +1,294 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="robots" content="noindex, nofollow"><style>:root{color-scheme:light}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>Signalen Create &amp; Convert</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Libre+Baskerville:ital,wght@0,400;1,400&display=swap">
+<!-- closed:in signalenoverzicht voor Create & Convert (Mark Kedde), demo 13-11-2026. Max loopt dit met Mark door:
+     per signaal "deze willen we voor jullie volgen, is dit interessant?" De knoppen Ja / Misschien / Nee en het notitieveld
+     zijn alleen voor het gesprek (per kijker, niets wordt gedeeld of opgeslagen bij closed:in). Geen em dashes. -->
+<style>
+/* Layout: één rustige leespagina in de huisstijl van de voorstellen: wit papier, navy, Baskerville-koppen, Geist-bodytekst.
+   Vier groepen signalen, per signaal een kaart met wat we zien, waarom het voor Mark telt, de bron, de haak, en drie knoppen. */
+:root{
+  --ink:#0B1F3A; --paper:#FFFFFF; --body:#2B3340; --muted:#667085; --rule:#D5DBE5; --rule2:#EBEEF3; --fill:#F2F4F8; --stage:#EDF0F5;
+  --accent:#0B2A5B; --on-ink:#FFFFFF; --on-ink-2:rgba(255,255,255,.78); --yes:#0B2A5B; --maybe:#8A6D1F; --no:#8B2F2F;
+  --fs:'Baskerville','Libre Baskerville','Iowan Old Style',Georgia,serif;
+  --fd:'Geist',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+h1,h2,h3,p{margin:0}
+body{background:var(--stage);color:var(--body);font-family:var(--fd);-webkit-font-smoothing:antialiased;line-height:1.55;
+  padding-block:24px 48px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+.page{max-width:1080px;margin:0 auto;background:var(--paper);box-shadow:0 1px 2px rgba(11,31,58,.06),0 12px 40px rgba(11,31,58,.08)}
+.head{padding:44px 56px 32px;border-bottom:1px solid var(--ink);display:flex;flex-direction:column;gap:18px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.top img{height:26px;width:auto;display:block}
+.stamp{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);font-weight:500}
+h1{font-family:var(--fs);font-weight:400;font-size:clamp(30px,4.2vw,44px);line-height:1.1;color:var(--ink);text-wrap:balance;max-width:22ch}
+h1 em{font-style:italic}
+.intro{font-size:16px;color:var(--body);max-width:66ch}
+.intro q{quotes:"\201C" "\201D";color:var(--ink)}
+.how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;padding:22px 56px;background:var(--fill);border-bottom:1px solid var(--rule2)}
+.how div{font-size:13.5px;color:var(--body);line-height:1.5;min-width:0}
+.how b{display:block;color:var(--ink);font-weight:600;margin-bottom:3px}
+.grp{padding:36px 56px 8px}
+.grp h2{font-family:var(--fs);font-weight:400;font-size:28px;line-height:1.15;color:var(--ink);margin-top:8px}
+.grp .why{font-size:14px;color:var(--muted);max-width:70ch;margin-top:8px}
+.cards{display:flex;flex-direction:column;gap:0;margin-top:22px;border-top:1px solid var(--ink)}
+.card{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) 190px;gap:28px;padding:22px 0;border-bottom:1px solid var(--rule2);align-items:start}
+.card:last-child{border-bottom:none}
+.card h3{font-family:var(--fd);font-weight:600;font-size:16px;color:var(--ink);line-height:1.3}
+.card .n{font-family:var(--fs);font-size:14px;color:var(--muted);margin-right:8px}
+.card p{font-size:14px;line-height:1.55;color:var(--body);margin-top:6px}
+.card .k{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:500;display:block;margin-bottom:4px}
+.meta{display:flex;flex-direction:column;gap:12px;min-width:0}
+.meta p{margin-top:0}
+.hook{font-family:var(--fs);font-style:italic;font-size:15px;color:var(--ink);line-height:1.4}
+.vote{display:flex;flex-direction:column;gap:8px}
+.vote .k{margin-bottom:0}
+.btns{display:flex;gap:6px;flex-wrap:wrap}
+.btns button{font-family:var(--fd);font-size:12px;font-weight:500;letter-spacing:.04em;padding:7px 12px;border:1px solid var(--rule);background:var(--paper);color:var(--body);cursor:pointer;border-radius:999px}
+.btns button:hover{border-color:var(--ink)}
+.btns button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btns button[aria-pressed="true"]{color:var(--on-ink);border-color:transparent}
+.btns button[data-v="ja"][aria-pressed="true"]{background:var(--yes)}
+.btns button[data-v="misschien"][aria-pressed="true"]{background:var(--maybe)}
+.btns button[data-v="nee"][aria-pressed="true"]{background:var(--no)}
+.own{margin:36px 56px 0;background:var(--ink);color:var(--on-ink);padding:28px 32px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:28px}
+.own .label{color:var(--on-ink-2)}
+.own h2{font-family:var(--fs);font-weight:400;font-size:26px;line-height:1.15;margin-top:8px}
+.own p{font-size:14px;color:var(--on-ink-2);margin-top:10px;line-height:1.55}
+.own textarea{width:100%;min-height:150px;font-family:var(--fd);font-size:14px;line-height:1.5;padding:12px 14px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.06);color:var(--on-ink);resize:vertical;border-radius:0}
+.own textarea::placeholder{color:rgba(255,255,255,.5)}
+.own textarea:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.sum{margin:28px 56px 0;padding:18px 0 0;border-top:1px solid var(--ink);display:flex;gap:28px;flex-wrap:wrap;font-size:14px;color:var(--body)}
+.sum b{color:var(--ink);font-weight:600}
+.foot{padding:28px 56px 40px;font-size:12px;color:var(--muted);line-height:1.5}
+@media (max-width:760px){
+  .head,.grp,.foot{padding-left:22px;padding-right:22px}
+  .how{grid-template-columns:minmax(0,1fr);padding:18px 22px}
+  .card{grid-template-columns:minmax(0,1fr);gap:14px}
+  .own{margin:28px 22px 0;grid-template-columns:minmax(0,1fr);padding:22px}
+  .sum{margin:22px 22px 0}
+}
+</style>
+
+<main class="page">
+  <header class="head">
+    <div class="top">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYUAAACSCAYAAACqh9bfAAARW0lEQVR42u3deZCdVZ3G8ed2pzudTkiapJMQEkI2NR1AgbDNCAlQCBNhxq1UUipL4RLLZXAqU4xj6YiUCwYJoBaZcYERFUdmKoyCQMCt4oIRjWFLAbY0wTQJCSQhpLuTXq5/nNPS3rznvNt5by/3+6l6S7y5972nz33f93f2IwEAAAAAAAAAAAAAAAAAAAC5lMgCAGPN3Llz10gaV6t/f2dn5+q+vr5+ggIASFq8ePGBUqnUXGt/d7lcVqlUUkdHx5Hd3d17s5xjHJcPgLFm27Zts2vx7541a9Y9jY2NZ/T39/dkPQdBAcCY09XVtbcW/+5yufyi/c+BrOeo4/IBABAUAAAEBQAAQQEAQFAAABAUAAAEBQAAQQEAQFAAABAUAAAEBQAAQQEAQFAAABAUAAAEBQAAQQEAQFAAABAUAAAEBQAAQQEAQFAAABAUAAAEBQAAQQEAQFAAABAUAAAEBQBA7RlHFgAYpgJpm6TZkp6T9JikAbKFoACg9hwtabOkGUNe2y1pqaRtZA/NR5Beb2+GyuMksgYJvdZxDS0fYelskvRURUCQpFZJT0iayE9JTQHSBEnHRLw+nqxBQuMd11DzCEvnmz1papK0UtLX+TmpKQCoDUsS1HhAUABQIx6P+feHySKCAoDacaekLse/HZJ0O1lEUABQO3okLZYZbTTUXvv6AbJIdDQDqCnPSpop6QRJcyRtl/SIpH6yhqAAoDYNSNpiD4jmIwAAQQEAQFAAABAUAACio3kMmyipRdIkman6PZJelvSC3GOvR4KSpMmSpti0N9p0vyxpj6SDqv76N1MlHSGzxMchmaGIg+kZqGK+TLF5M0lmqYguSS/KDJHsrXK+1Nt8GUzPgE3PbkkvSSpzC2b6facOWVNpn6T99n9ZlRWZalInS/qmfWiVPUe3pK9KOjVDDew8xznPUL61cN4g6W6ZoX6+tO+SdK2kV9kbqYibc4mkNTaAlmOOLZIusQ9HFbBG0ApJGxLkyxOSPiRpVoHX2BGS3mX/Zl9aDtrr6xjHeU51fG5FgN/OdWR1lqSdEcfSlO9vcbz/ZEm3xuRnv6TvSDq7oGt+WCxYsODutra2cmNjYyOP7/DB4O0JAoHr2C/pHSmCQ8ig0CTpUxnTXZb0Z0nLAt0oJRuYduZIz9pACwM2SfpMjnRskplcFbLWeWPGtNwcUcsvIiicFpOOpoznTXu9u94/teJ9sxME16ijU9I5BAW4zJFZcrgc4PiTpLlVDApvsE0eIdL+kKcklkSLpAcDpWW/pHk50nJewHz5mqSGnNfYeQlqKUmurUkEhb86P8Bve+No72cNERToaNZhy/o+66mipzVf0jP2YV102+nNtkkkVD/RUlvCPy3DZ+fJzFI9PVBaJklql3RchnxZK+n+gPnyXpn9AKZm/PwXbHrqAlxbDwcIUGPBuZLuC3Cej0q6dyw1JxEU8nmXpPUp3r9dpqM5iQ22JFNUQLhd0qqE7++yaU/SydYo6Te2OSmpwc1S4tbxf1rStyV9SdI6mb6Pnphr9feSpqXIl29IujLh+/faIJjEsTZIHZkhIFyV8L2HEvxO82XazmvZdBtkXfpSXO+Dte1/53GIcxM0X3zCloDHRTysZkq6XGbkjO888wpoPloX852b7flbIkpA42zz1mqZjnLfedoSFjKelL/jdpkNNi5HSfqK5xyPJSzJXR/z9/xEppPxiIjzNcqs6399gv6XpCX1S2LOtVPSpfZaqov4nY62AW5XxGcvqtHmo+n2d6wc8LFKphm4Mh8b7HW8LkFT0iL6FGrXNPnbm69PcePXy4yw8bUD1wUMCv/k+a59Mtt8JtUg6TrP+fbIDB/1eavn8x9IWS1f7jnXW2I+e47ns9sSBrhBUyXd5TnfN5Ssn8r3APpQilp7vQ7vMO+VtLEGg0JlAeSaFPfqbBvUXX/bnQSF2rXJc2GcnfGc7/ec862BgsIkuTsrO2wJOIu3eNL+vZjPum6ylRnTssJxvhc8AabJE+Tvyti3MNg3kbVUuVnuYZFLM+bNOQk7T8dyUBh6XKhsI9I6POdsJSjUnrM8F8S5Oc+9JsUDLUtQ+C9PDWFSzrSv9OTLqx2fOdLx/kdypuUrjofpPE+7fVQ67gnQgXib49y/zHiNnan8/WBFBoXptinGddSPkKCwKsffODtlAY6goLE927HTcTFcozCzU3cl7FtIe5NM91zIxwXKn285zv9rx/tPdLz/4pzpmKC/nUi2wNPUMsXTXh/iJmmQtMPxHXMcn3H1sVwb6HfaUGBQKErIoPBQgPTc5Dj3twgKteV4x4WwI+DwxTc5vuPynDeJa3LaNxV2cpWreWqmknfW/73CzEJO4iOONJxShQfaJyLeO9czOznUTXtUjQeFkwKk52i5VymouaBQy2sfuYadvUdmGFsI90n6nKKHPyrHMOJPOv7t3wLmzwFJV9tDEWP1P6vDt1l03XB5HUxY84vK6z8EKk0O+on9/Son9q223z90faLLHOe4SmbIaQg7JN0hMwO/1vTZ3zev52SGrNZF9DmMC/g8wAhW7ygZ9A5ToExTclrkeO/PCkhXq6c5ptKrHe/dWKU8nBt4sIDPZx3fVTlvoTPh8gx5nVajNYXvBUzTPY7vmCBmNNeE+Y7XbxgFpYILHK9fV8B37ZaZZFZpRkRJeZvjHGfKzBQvmmvtml8X8F0/dLz+Gv3t6LCohfTaZVZhDel3NXof3x/wXE/JPUJJzGge+1wlkh+MgrS/zfH6rwr6vi87Xl8c0Xz0C8d718s0bRVZC3uHojt5i1gW/GnH66+tqLlEuaWA9PRL+m0N3sc7A56rU/n6swgKo5xrPZ+toyDtr3e0re4p6Pt+7nh9ScRrH/Sc5/MyM8M/JtM5GtrZBZckVbFUiBxNaBrSzJcmP/O6qwbv4xcD90/I0VclNtkZ+5ZX4SJTQXsBRLUVPqTiNmDZ5lm/v3K006O2JHy5pyp+vT1ekpkNfKfMwm57cw4VbXYs6vdeFbPeTpS2mKDpy8+8arGmwCY5BIVgFo/Si6xpGB4IL8m9Eqocs7nbFL9Ex2Rba/jYkO+5Taap6bee75VjLoMczYRnVPH3GdqBPMuz8N5ILzVjlDp48OADAwMDu8rl8gDNR+lElbafH6XplsyQOhU47C9NablPponrtpTfM1lmctoDMrOy/2hrHM058qXaWhwBQhWrnxZhP49EbN++fW1HR8dlvb29fQSF/H/zjlGQ9vHD8EBwlThmxHzmEplZzu0Zv3ehXtkGdW3MKJCRMkJkQsXs6mrWRrsE0NGcSTllyVcjbLJOtUdIlDyT2+JskelwXWwf8FlLL1fa2sNyz+ibkXY/vVzle26CANGnEDIozBoFaT/kWfOn2gWHNM1tT0i6QtL7ZPoilsusiXR+yqazn8mMcFqnZDOe75d7SG3RpfU9nk7xngK++wgeZyAoZPe8ops/SgWO4lGByz0cp+o0iSjnGPEBmT0l/iQzSmlwg6JTZCa4Xaz4PoSbZTba2ZggX7bKPdGsaC/I3e+wv+D+DIDmo5R+5ensHMm6U8xdUMClLlTQLNoBmU7yH9qaxOAs4I/L39S0oWIzle4EQ0SrbatnqeYinMzjDMMaFOrq6krTp08/f9q0aadr7ASFRaNgXHZUx+1MFdev4HrYPKximvZ2yOyJMEXSj+TuWF5ZkS/PRrzvpGH8rZ7y7K9QhAt5nGFYg0J9fX19a2vrfS0tLdeNwr/7Qcfry0ZB2u+We7SOqrR8RDVmf3fJ7D3smgH8rxX//0eOWs6kYfqdnpF7r+Yi7uMzeZyB5qPstsi9nPZIn9b+v3LvwqUC+pzeqerOzK2sObxb7v0whjYh3eF433DVFnYremDA8QrfTLmERxkICso9S3e7o2TZFng45/yIY0aOc/7e8fq/FDBwYJknMFVr9vefPaOumiqW+lDBe0ykDWi3y70Pdkgf5lEGgoIK22TnSwG/4wS9Mtpm6HG58m1+82PHA/KiwAHtqxnyqEFmYbj3B6x1PefZF2PQPkm/iXjPGyUdE/jaWWj/xrg9itfJvUR7qHtvkqQP8CgDQSG//3O8/g9yT5JK62rH6w/kPK+r9PsdhetwvkjRa0S9JGmTDu/oXmVfPyQzL+E/JR0bKDi5ztMT088w6OsBA1TJBuUnZEZIrbd5FbWsxSbHnIQWGzRDWMtjDCNCQ0PDuLa2tvLChQs3juI/40bHbkv7lGzNHWXYA7qsw5t50u5EVZJZGyjqM98PkC/TZMb+R53/3Y4NbqLeu17F7aW9x1HI2eF4/1WBrpn3pNy1758918Ec5e9LKKt292gOudjhasd3zBJqKij4NqffkqPUPcUGlqjz/kegi/51ngfBp3PmSYfjvJ2O2uVET1rOyrkktist18g9Z8OVlisKDPSf8vwN3XJvazolx4qs+woOCnW2ecp1EBQw5oKCr+RXlmn/T7vx/DyZ2ayu0uTEgBf9dz1pX5eh43mefVC5zvk6z2dvdXymX2bGsjK0lW/2pOWoDPvtlmX2cBifsTmtP+XvOujNnvS8oPTDiRd5rrGQQeG0mHM3ERQwFoOCZLbh9F38n7NNKoqZ+bsm5jxvD3zRN8gMDXV93y6ZSU0NMeeZIenamLRflaDJyff5tUq2FMMESZfaB63rXDcqfjVZX3DrlfQRSUcmKCmfIOmXMX9bktFE62POsUbxizK2ymxQFHV9TiUoEBTE2kcKue/xJpmlnqN83B7PyrTZPyazCuZkmVEoKxU/wuUWucfSZ9UrM+O43TH2vVWvbNP4oA1+nbY5Y6rM8NuLEwyR/a6kLyp+rZ8rbElcjpVOr5T0B5khrQ/b5o+SbUJZIulNCW70J+0NrJg1ok6U6Xdpdlz3N9ljt6T/kdl3uVNmRNFMmcEGKxLcIzck7Dt5p8zOdK/yPJRWywyVvl2mI3uwb2uJ/XxUh3u7pE+KBfFATUFFbGCzOWGVPO1xR8xIr7wloVaZjtci0n5rypE76wpKR1mmfyHNw29mwnb3rMfXUuZNc0zNLu3RP6QZrYWaAjUFMSRVoZelXqrwSy1fLbNUxEDBs2ePllkoLqTL7JFm5dhVemWLzZDulRkim2aF0Z32oXmviumLel/KvOmyNYVQ6TlVo2NzKBAUNJo3Av+oTMdoe85zPSmzpPWnq7Qcd7fMHIt/VP59gDfIrOb53xk/f4Ok19imohAB7wJb4u3JmC8rZPZu2BkgPf9vayDfVvblz99om4N6ckzmmyf37HaAoBDY72yJ7u/sQyCNn0o63ZZqH1f1l1a4yzYnXajoGb7y7Op2k/27L5BpX88bFE+Sadu/JcPnfyyzzMbMQDWg+21tapnS77HQY2t8x8qMJHo+wO/0fZm+lEsVvcKrKx0flOm/eobbFKriVotK0qewaNGi3kOHDv2ivb39rDGeT+PtjXiifWgeJdNRe0BmhM+jMp3PT3k2fNEwzsWYbx/QC2zaJ9oS+HM27Y/aINBf8KCGWTZYHm8f9tPtyKg99vsfl+lgfVqmE10F9yHNsbW5JTYtM+yDd6dMs8wWm57dVajtDa67dYqtpc2w19Lzkh6xBZX2Kq45JZn+G98+DRurnB6IjmYAgGg+AgAQFAAABAUAAEEBAEBQAAAQFAAABAUAAEEBAEBQAAAQFAAABAUAAEEBAEBQAAAQFAAABAUAAEEBAEBQAACAoAAAICgAAAgKAACCAgCAoAAAICgAAAgKAACCAgCAoAAAICgAAAgKAACCAgCAoAAAICgAAAgKAACCAgCAoAAAICgAAAgKAACCAgCAoAAAICgAAAgKAACCAgCAoAAAGPvG5Q0opVJpcnNzc0stZl5XV9deLiEAY0kp6webmpomzp8//+VyuaxSqVSTmbd169YSlxAAagqS+vr6ug8cOHADWQgAAAAAAAAAAAAAAAAAAAAAAKy/AAhFXMeVAQFZAAAAAElFTkSuQmCC" alt="closed:in">
+      <span class="stamp">Create &amp; Convert &middot; 13 november 2026</span>
+    </div>
+    <span class="label">Signalen</span>
+    <h1>Welke gebeurtenissen maken een bedrijf <em>nu</em> interessant voor Create &amp; Convert?</h1>
+    <p class="intro">We schrijven een bedrijf niet omdat het in de lijst staat, maar omdat er iets gebeurt. Dit zijn de signalen die we voor jou willen volgen in de markt van <q>organisaties die leveren aan andere organisaties en die graag willen groeien</q>. Loop ze door en zeg per signaal of het klopt met wat jij in de praktijk ziet.</p>
+  </header>
+
+  <div class="how">
+    <div><b>Wat je ziet</b>Per signaal: wat er gebeurt, waarom dat voor jouw aanbod telt, waar we het vandaan halen en de haak die in de mail of het LinkedIn-bericht komt.</div>
+    <div><b>Wat we vragen</b>Ja, misschien of nee per signaal. En onderaan: welke signalen zie jij zelf in je beste klanten, die hier niet staan?</div>
+    <div><b>Hoe we het gebruiken</b>Alleen gebeurtenissen van de laatste 90 dagen. Een bedrijf krijgt één aanleiding per bericht; meerdere signalen tegelijk maken het bedrijf hoger in de lijst.</div>
+  </div>
+
+  <section class="grp">
+    <span class="label">Groep 1</span>
+    <h2>Mensen: wie er binnenkomt en wie er gezocht wordt</h2>
+    <p class="why">Jij zei het zelf: het gaat vaak om een doelstelling, zoals het vinden van de juiste mensen of het aanboren van een markt. Beide beginnen met een personeelsbeweging die van buiten te zien is.</p>
+    <div class="cards">
+      <div class="card">
+        <div><h3><span class="n">01</span>Nieuwe marketingverantwoordelijke</h3>
+          <p>Een marketingmanager, online marketeer of commercieel directeur is in de laatste 90 dagen gestart. Nieuwe mensen willen in hun eerste honderd dagen iets laten zien en kiezen dan hun partners.</p></div>
+        <div class="meta">
+          <p><span class="k">Bron</span>LinkedIn, via Clay (functiewissel met startdatum)</p>
+          <p><span class="k">Haak</span><span class="hook">"Gefeliciteerd met je nieuwe rol. Meestal staat vindbaarheid dan bovenaan de lijst."</span></p>
+        </div>
+        <div class="vote"><span class="k">Interessant?</span><div class="btns" data-sig="01"><button type="button" data-v="ja" aria-pressed="false">Ja</button><button type="button" data-v="misschien" aria-pressed="false">Misschien</button><button type="button" data-v="nee" aria-pressed="false">Nee</button></div></div>
+      </div>
+      <div class="card">
+        <div><h3><span class="n">02</span>Vacature voor een marketeer</h3>
+          <p>Het bedrijf zoekt een (online) marketeer of contentmedewerker. Het heeft budget en ambitie, maar nog geen capaciteit. Een eerste marketeer alleen kan geen SEO, SEA en content tegelijk.</p></div>
+        <div class="meta">
+          <p><span class="k">Bron</span>LinkedIn Jobs en de eigen vacaturepagina, met datum</p>
+          <p><span class="k">Haak</span><span class="hook">"Zolang die vacature openstaat, kunnen wij het Google-stuk alvast dragen."</span></p>
+        </div>
+        <div class="vote"><span class="k">Interessant?</span><div class="btns" data-sig="02"><button type="button" data-v="ja" aria-pressed="false">Ja</button><button type="button" data-v="misschien" aria-pressed="false">Misschien</button><button type="button" data-v="nee" aria-pressed="false">Nee</button></div></div>
+      </div>
+      <div class="card">
+        <div><h3><span class="n">03</span>Technische vacatures die lang openstaan</h3>
+          <p>Meerdere vacatures voor monteurs, engineers of planners, langer dan 60 dagen open. Dan is de doelstelling werving, en daar hoort vindbaarheid en employer branding bij.</p></div>
+        <div class="meta">
+          <p><span class="k">Bron</span>Eigen vacaturepagina, LinkedIn Jobs (datum eerste plaatsing)</p>
+          <p><span class="k">Haak</span><span class="hook">"Drie vacatures die al twee maanden openstaan: dat is geen arbeidsmarktprobleem maar een vindbaarheidsprobleem."</span></p>
+        </div>
+        <div class="vote"><span class="k">Interessant?</span><div class="btns" data-sig="03"><button type="button" data-v="ja" aria-pressed="false">Ja</button><button type="button" data-v="misschien" aria-pressed="false">Misschien</button><button type="button" data-v="nee" aria-pressed="false">Nee</button></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="grp">
+    <span class="label">Groep 2</span>
+    <h2>Groei: bedrijven die al in beweging zijn</h2>
+    <p class="why">Klanten die groeien worden hebberig, zei je: 20 procent wordt 30, wordt 40. Groei van buiten herkennen betekent dat we die klanten vinden voordat ze bij een ander bureau zitten.</p>
+    <div class="cards">
+      <div class="card">
+        <div><h3><span class="n">04</span>Personeelsgroei van 20 procent of meer</h3>
+          <p>Het aantal medewerkers op LinkedIn is in twaalf maanden met een vijfde gegroeid. Groei trekt budget en nieuwe vragen aan, en de website loopt meestal achter op het bedrijf.</p></div>
+        <div class="meta">
+          <p><span class="k">Bron</span>LinkedIn-headcount via Clay, jaar op jaar</p>
+          <p><span class="k">Haak</span><span class="hook">"Jullie zijn van 18 naar 24 mensen gegaan; de site vertelt nog het verhaal van 18."</span></p>
+        </div>
+        <div class="vote"><span class="k">Interessant?</span><div class="btns" data-sig="04"><button type="button" data-v="ja" aria-pressed="false">Ja</button><button type="button" data-v="misschien" aria-pressed="false">Misschien</button><button type="button" data-v="nee" aria-pressed="false">Nee</button></div></div>
+      </div>
+      <div class="card">
+        <div><h3><span class="n">05</span>Op een groeilijst</h3>
+          <p>FD Gazellen, MT1000, Deloitte Fast 50 of een regionale toplijst. Een naam die de ondernemer zelf trots deelt, en een lijst die je kunt opendoen.</p></div>
+        <div class="meta">
+          <p><span class="k">Bron</span>De lijst zelf (FD, MT, Deloitte), jaarlijks</p>
+          <p><span class="k">Haak</span><span class="hook">"Gazelle in 2026: de vraag is nu hoe je dat tempo vasthoudt als het netwerk op is."</span></p>
+        </div>
+        <div class="vote"><span class="k">Interessant?</span><div class="btns" data-sig="05"><button type="button" data-v="ja" aria-pressed="false">Ja</button><button type="button" data-v="misschien" aria-pressed="false">Misschien</button><button type="button" data-v="nee" aria-pressed="false">Nee</button></div></div>
+      </div>
+      <div class="card">
+        <div><h3><span class="n">06</span>Nieuwe markt, product of vestiging</h3>
+          <p>Een persbericht, LinkedIn-post of nieuwspagina over een nieuwe productlijn, een nieuwe vestiging of een stap naar België of Duitsland. Nieuwe markt betekent nieuwe zoekvragen waar nog niemand op gevonden wordt.</p></div>
+        <div class="meta">
+          <p><span class="k">Bron</span>LinkedIn-bedrijfspagina, nieuwspagina op de site, regionale pers</p>
+          <p><span class="k">Haak</span><span class="hook">"Jullie stap naar Duitsland staat op LinkedIn, maar nog niet in Google.de."</span></p>
+        </div>
+        <div class="vote"><span class="k">Interessant?</span><div class="btns" data-sig="06"><button type="button" data-v="ja" aria-pressed="false">Ja</button><button type="button" data-v="misschien" aria-pressed="false">Misschien</button><button type="button" data-v="nee" aria-pressed="false">Nee</button></div></div>
+      </div>
+      <div class="card">
+        <div><h3><span class="n">07</span>Overname of nieuwe eigenaar</h3>
+          <p>Het bedrijf is overgenomen, heeft een nieuwe DGA of een investeerder aan boord. Een nieuwe eigenaar herziet in het eerste jaar de commerciële aanpak en de leveranciers.</p></div>
+        <div class="meta">
+          <p><span class="k">Bron</span>Nieuws en persberichten, KvK-wijzigingen, LinkedIn</p>
+          <p><span class="k">Haak</span><span class="hook">"Na een overname wordt de website meestal als laatste meegenomen, terwijl de klanten daar als eerste kijken."</span></p>
+        </div>
+        <div class="vote"><span class="k">Interessant?</span><div class="btns" data-sig="07"><button type="button" data-v="ja" aria-pressed="false">Ja</button><button type="button" data-v="misschien" aria-pressed="false">Misschien</button><button type="button" data-v="nee" aria-pressed="false">Nee</button></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="grp">
+    <span class="label">Groep 3</span>
+    <h2>Website en vindbaarheid: waar jouw werk begint</h2>
+    <p class="why">Iemand heeft vaak een probleem op SEO-vlak, zei je. Dat probleem is van buiten te meten, nog voordat het bedrijf het zelf benoemt.</p>
+    <div class="cards">
+      <div class="card">
+        <div><h3><span class="n">08</span>Nieuwe website of rebranding</h3>
+          <p>De site is in de laatste maanden vernieuwd of het bedrijf heeft een nieuwe naam. Na een migratie zakt de vindbaarheid bijna altijd, en de tracking staat zelden goed.</p></div>
+        <div class="meta">
+          <p><span class="k">Bron</span>Wayback Machine, "nieuwe website"-berichten, wijziging in de techniek van de site</p>
+          <p><span class="k">Haak</span><span class="hook">"Mooie nieuwe site. De oude pagina's die scoorden, zijn nu 404."</span></p>
+        </div>
+        <div class="vote"><span class="k">Interessant?</span><div class="btns" data-sig="08"><button type="button" data-v="ja" aria-pressed="false">Ja</button><button type="button" data-v="misschien" aria-pressed="false">Misschien</button><button type="button" data-v="nee" aria-pressed="false">Nee</button></div></div>
+      </div>
+      <div class="card">
+        <div><h3><span class="n">09</span>Adverteert in Google, maar organisch onvindbaar</h3>
+          <p>Het bedrijf koopt advertenties op zijn eigen productwoorden, maar staat organisch niet op de eerste pagina. Het betaalt dus voor verkeer dat het ook gratis kon hebben. Dit is jouw SEA-naar-SEO-verhaal.</p></div>
+        <div class="meta">
+          <p><span class="k">Bron</span>Google Ads Transparantiecentrum, zoekresultaten per productwoord</p>
+          <p><span class="k">Haak</span><span class="hook">"Jullie adverteren op 'dampremmende folie' en staan organisch op pagina drie."</span></p>
+        </div>
+        <div class="vote"><span class="k">Interessant?</span><div class="btns" data-sig="09"><button type="button" data-v="ja" aria-pressed="false">Ja</button><button type="button" data-v="misschien" aria-pressed="false">Misschien</button><button type="button" data-v="nee" aria-pressed="false">Nee</button></div></div>
+      </div>
+      <div class="card">
+        <div><h3><span class="n">10</span>Groot assortiment, dunne productpagina's</h3>
+          <p>Honderden producten of diensten op de site met een regel tekst per pagina. Precies waar jouw content automation het snelst resultaat geeft.</p></div>
+        <div class="meta">
+          <p><span class="k">Bron</span>De site zelf (aantal pagina's, tekst per pagina), sitemap</p>
+          <p><span class="k">Haak</span><span class="hook">"340 productpagina's, gemiddeld 40 woorden. Google heeft daar niets aan, en jullie klanten ook niet."</span></p>
+        </div>
+        <div class="vote"><span class="k">Interessant?</span><div class="btns" data-sig="10"><button type="button" data-v="ja" aria-pressed="false">Ja</button><button type="button" data-v="misschien" aria-pressed="false">Misschien</button><button type="button" data-v="nee" aria-pressed="false">Nee</button></div></div>
+      </div>
+      <div class="card">
+        <div><h3><span class="n">11</span>Verouderde techniek of geen meting</h3>
+          <p>Geen GA4 of tagmanager, een site van voor 2018, trage laadtijd. Het bedrijf weet niet wat zijn website oplevert, en dat is het begin van jouw vooronderzoek.</p></div>
+        <div class="meta">
+          <p><span class="k">Bron</span>Techniekdata per domein (via Clay), PageSpeed</p>
+          <p><span class="k">Haak</span><span class="hook">"Er staat geen meting op jullie site, dus elke marketingeuro is nu een gok."</span></p>
+        </div>
+        <div class="vote"><span class="k">Interessant?</span><div class="btns" data-sig="11"><button type="button" data-v="ja" aria-pressed="false">Ja</button><button type="button" data-v="misschien" aria-pressed="false">Misschien</button><button type="button" data-v="nee" aria-pressed="false">Nee</button></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="grp">
+    <span class="label">Groep 4</span>
+    <h2>Zichtbaar in de markt: bedrijven die nu investeren</h2>
+    <p class="why">Wie geld uitgeeft aan een beurs of een campagne, heeft marketing op de agenda staan. Dat is het moment om naast de huidige aanpak te gaan staan.</p>
+    <div class="cards">
+      <div class="card">
+        <div><h3><span class="n">12</span>Exposant op een vakbeurs</h3>
+          <p>Staat op de exposantenlijst van een vakbeurs in zijn sector (bijvoorbeeld TechniShow, ESEF, Bouwbeurs, Logistica). Investeert in zichtbaarheid en heeft een leadlijst die opgevolgd moet worden.</p></div>
+        <div class="meta">
+          <p><span class="k">Bron</span>Exposantenlijsten van de beurzen, openbaar</p>
+          <p><span class="k">Haak</span><span class="hook">"Na de beurs komen de bezoekers thuis op jullie site terecht. Wat zien ze dan?"</span></p>
+        </div>
+        <div class="vote"><span class="k">Interessant?</span><div class="btns" data-sig="12"><button type="button" data-v="ja" aria-pressed="false">Ja</button><button type="button" data-v="misschien" aria-pressed="false">Misschien</button><button type="button" data-v="nee" aria-pressed="false">Nee</button></div></div>
+      </div>
+      <div class="card">
+        <div><h3><span class="n">13</span>Werkt met een generalistisch bureau of doet het zelf</h3>
+          <p>Op de site staat een bureaucredit van een webbouwer zonder SEO-specialisme, of de marketing wordt zichtbaar door één persoon gedaan. Hier past jouw aanbod als specialist naast wat er al is.</p></div>
+        <div class="meta">
+          <p><span class="k">Bron</span>Credit in de footer van de site, LinkedIn-team</p>
+          <p><span class="k">Haak</span><span class="hook">"Jullie site is goed gebouwd. Nu moet hij nog gevonden worden."</span></p>
+        </div>
+        <div class="vote"><span class="k">Interessant?</span><div class="btns" data-sig="13"><button type="button" data-v="ja" aria-pressed="false">Ja</button><button type="button" data-v="misschien" aria-pressed="false">Misschien</button><button type="button" data-v="nee" aria-pressed="false">Nee</button></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="own">
+    <div>
+      <span class="label">Jouw signalen</span>
+      <h2>Welke signalen zie jij zelf bij je beste klanten?</h2>
+      <p>Denk aan het moment waarop jouw laatste vijf klanten bij je kwamen. Wat was er net gebeurd? Dat zijn de signalen die we als eerste bouwen.</p>
+    </div>
+    <div>
+      <label class="label" for="eigen">Notities uit het gesprek</label>
+      <textarea id="eigen" placeholder="Bijvoorbeeld: net een nieuwe salesmanager, verhuisd naar een groter pand, eerste exportklant..."></textarea>
+    </div>
+  </section>
+
+  <div class="sum" id="sum" aria-live="polite"><span><b>Ja:</b> <span id="c-ja">0</span></span><span><b>Misschien:</b> <span id="c-misschien">0</span></span><span><b>Nee:</b> <span id="c-nee">0</span></span><span>Nog open: <span id="c-open">13</span></span></div>
+
+  <p class="foot">De keuzes op deze pagina blijven in je eigen browser en worden nergens opgeslagen of gedeeld. Signalen 01, 02, 04 en 05 zijn standaard in de closed:in-werkwijze; de andere bouwen we per klant. Elk signaal krijgt een datum en een bron die je zelf kunt openen.</p>
+</main>
+
+<script>
+(function(){
+  var groups=document.querySelectorAll('.btns');
+  var total=groups.length;
+  var KEY='cc-signalen-2026-11-13';
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function count(){
+    var c={ja:0,misschien:0,nee:0};
+    Object.keys(state).forEach(function(k){if(c[state[k]]!==undefined)c[state[k]]++;});
+    document.getElementById('c-ja').textContent=c.ja;
+    document.getElementById('c-misschien').textContent=c.misschien;
+    document.getElementById('c-nee').textContent=c.nee;
+    document.getElementById('c-open').textContent=total-c.ja-c.misschien-c.nee;
+  }
+  groups.forEach(function(g){
+    var id=g.getAttribute('data-sig');
+    var btns=g.querySelectorAll('button');
+    function paint(){btns.forEach(function(b){b.setAttribute('aria-pressed',state[id]===b.getAttribute('data-v')?'true':'false');});}
+    btns.forEach(function(b){b.addEventListener('click',function(){
+      var v=b.getAttribute('data-v');
+      if(state[id]===v){delete state[id];}else{state[id]=v;}
+      try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}
+      paint();count();
+    });});
+    paint();
+  });
+  var ta=document.getElementById('eigen');
+  try{ta.value=localStorage.getItem(KEY+'-notes')||'';}catch(e){}
+  ta.addEventListener('input',function(){try{localStorage.setItem(KEY+'-notes',ta.value);}catch(e){}});
+  count();
+})();
+</script>
+</body></html>
